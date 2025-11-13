@@ -6,3 +6,5 @@ by Bill Chen and Jerrod Ankenman.
 
 __version__ = "0.1.0"
 __author__ = "nheske"
+
+from .games import *

@@ -6,6 +6,20 @@ Python implementation of the toy games from [The Mathematics of Poker](https://w
 
 This project implements various game-theoretic models and toy games discussed in "The Mathematics of Poker", providing practical Python implementations for educational and research purposes.
 
+10. Facing The Nemesis: Game Theory
+11. One Side of the Street: Half-Street Games
+
+12. Headsup With High Blinds: The Jam-or-Fold Game
+13. Poker Made Simple: The AKQ Game
+14. You Don't Have To Guess: No-Limit Bet Sizing
+15. Player X Strikes Back: Full-Street Games
+16. Small Bets, Big Pots: No-Fold [0,1] Games
+
+
+
+
+
+
 ## Project Structure
 
 ```
