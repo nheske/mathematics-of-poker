@@ -51,63 +51,66 @@ class ClairvoyanceGame(HalfStreetGame):
         """
         Calculate payoff matrices for the Clairvoyance Game.
         
-        X's strategies: [Fold when Y bets, Call when Y bets]
-        Y's strategies: [Check always, Bet nuts only, Bluff only, Bet always]
+        X's strategies: [Always Fold when Y bets, Always Call when Y bets]
+        Y's strategies: [Check Always, Bet Nuts Only, Bluff Only, Bet Always]
         
         Returns:
             Tuple of (payoff_matrix_x, payoff_matrix_y)
         """
         P = self.pot_size
         B = self.bet_size
-        
+
         # Payoff matrix for X (rows = X strategies, cols = Y strategies)
-        # X strategies: [Always Fold, Always Call]
-        # Y strategies: [Check Always, Bet Nuts Only, Bluff Only, Bet Always]
-        
         payoff_x = np.zeros((2, 4))
-        
-        # When X always folds:
-        payoff_x[0, 0] = 0.0      # Y checks always: showdown, X wins 50% of time: 0.5 * P - 0.5 * P = 0
-        payoff_x[0, 1] = -P/2     # Y bets nuts only: X folds to nuts (50% of time), wins showdown vs bluffs (50%): 0.5 * (-P) + 0.5 * 0 = -P/2
-        payoff_x[0, 2] = P/2      # Y bluffs only: X folds to bluffs (50%), wins vs nuts at showdown (50%): 0.5 * (-P) + 0.5 * 0 = P/2
-        payoff_x[0, 3] = -P/2     # Y bets always: X always folds, loses P when Y has nuts, loses P when Y bluffs: -P
-        
-        # When X always calls:
-        payoff_x[1, 0] = 0.0      # Y checks always: showdown, expected value = 0
-        payoff_x[1, 1] = -B/2     # Y bets nuts only: call and lose to nuts 50%, win at showdown 50%: 0.5 * (-P-B) + 0.5 * 0 = -(P+B)/2
-        payoff_x[1, 2] = B/2      # Y bluffs only: call and win vs bluffs 50%, lose at showdown 50%: 0.5 * (P+B) + 0.5 * 0 = (P+B)/2
-        payoff_x[1, 3] = 0.0      # Y bets always: 0.5 * (-(P+B)) + 0.5 * (P+B) = 0
-        
-        # Recalculating more carefully:
+
         # Scenario analysis:
-        # Y has nuts (50% of time): beats X's hand
-        # Y has bluff (50% of time): loses to X's hand
-        
-        # X Always Folds when Y bets:
-        payoff_x[0, 0] = 0.0                           # Check always: 0.5*P - 0.5*P = 0 (showdown)
-        payoff_x[0, 1] = 0.5 * (-P) + 0.5 * 0         # Bet nuts only: fold to nuts, showdown vs bluff
-        payoff_x[0, 2] = 0.5 * 0 + 0.5 * (-P)         # Bluff only: showdown vs nuts, fold to bluff  
-        payoff_x[0, 3] = 0.5 * (-P) + 0.5 * (-P)      # Bet always: fold to both
-        
-        # X Always Calls when Y bets:
-        payoff_x[1, 0] = 0.0                                    # Check always: showdown
-        payoff_x[1, 1] = 0.5 * (-(P + B)) + 0.5 * 0           # Bet nuts only: call and lose to nuts, showdown vs bluff
-        payoff_x[1, 2] = 0.5 * 0 + 0.5 * (P + B)              # Bluff only: showdown vs nuts, call and win vs bluff
-        payoff_x[1, 3] = 0.5 * (-(P + B)) + 0.5 * (P + B)     # Bet always: call both
-        
-        # Simplify:
-        payoff_x[0, 1] = -P/2
-        payoff_x[0, 2] = -P/2  
-        payoff_x[0, 3] = -P
-        
-        payoff_x[1, 1] = -(P + B)/2
-        payoff_x[1, 2] = (P + B)/2
-        payoff_x[1, 3] = 0
-        
+        # Y has winning hand (nuts) 50% of the time - beats X at showdown
+        # Y has losing hand (bluff) 50% of the time - loses to X at showdown
+
+        # X Strategy 0: Always Fold when Y bets
+        payoff_x[0, 0] = 0.0    # Y Check Always: showdown, EV = 0
+        payoff_x[0, 1] = 0.0    # Y Bet Nuts Only: lose P when bet, win P when check
+        payoff_x[0, 2] = -P     # Y Bluff Only: lose P whether bluffing or checking
+        payoff_x[0, 3] = -P     # Y Bet Always: always fold and lose pot P
+
+        # X Strategy 1: Always Call when Y bets
+        payoff_x[1, 0] = 0.0           # Y Check Always: showdown, EV = 0
+        payoff_x[1, 1] = -B / 2        # Y Bet Nuts Only: lose P+B when bet, win P when check
+        payoff_x[1, 2] = B / 2         # Y Bluff Only: lose P when check, win P+B when bluff
+        payoff_x[1, 3] = 0.0           # Y Bet Always: symmetric outcomes, EV = 0
+
         # Y's payoff is negative of X's payoff (zero-sum game)
         payoff_y = -payoff_x
-        
+
         return payoff_x, payoff_y
+
+    def solve_nash_equilibrium(self) -> Dict:
+        """Closed-form Nash equilibrium for the Clairvoyance Game."""
+
+        P = float(self.pot_size)
+        B = float(self.bet_size)
+        if P < 0 or B <= 0:
+            raise ValueError("Pot size must be non-negative and bet size must be positive")
+
+        denominator = 2 * P + B
+        bluff_fraction = B / denominator if denominator > 0 else 0.0
+        call_probability = (2 * P) / denominator if denominator > 0 else 0.0
+
+        x_strategy = np.array([1.0 - call_probability, call_probability])
+        y_strategy = np.array([0.0, 1.0 - bluff_fraction, 0.0, bluff_fraction])
+
+        payoff_x, payoff_y = self.get_payoff_matrix()
+        game_value = float(x_strategy @ payoff_x @ y_strategy)
+
+        return {
+            "x_strategy": x_strategy,
+            "y_strategy": y_strategy,
+            "game_value": game_value,
+            "x_labels": self.get_strategy_labels()[0],
+            "y_labels": self.get_strategy_labels()[1],
+            "bluff_fraction": bluff_fraction,
+            "call_probability": call_probability,
+        }
     
     def get_strategy_labels(self) -> Tuple[list, list]:
         """Get human-readable labels for strategies."""
@@ -128,34 +131,28 @@ class ClairvoyanceGame(HalfStreetGame):
         x_strategy = solution['x_strategy']
         y_strategy = solution['y_strategy']
         
-        # X's calling frequency  
+        # X's calling frequency when Y bets
         call_freq = x_strategy[1] if len(x_strategy) >= 2 else 0
         
-        # Y's betting frequencies need to be interpreted
+        # Y's betting frequencies
         # Y strategies: [Check Always, Bet Nuts Only, Bluff Only, Bet Always]
-        # Convert to betting frequencies for nuts and bluffs
-        
-        # If we think of Y's strategy as a combination:
-        # Let p_nuts = probability of betting with nuts
-        # Let p_bluff = probability of betting with bluffs
-        
-        # Then the pure strategies correspond to:
-        # Check Always: p_nuts = 0, p_bluff = 0
-        # Bet Nuts Only: p_nuts = 1, p_bluff = 0  
-        # Bluff Only: p_nuts = 0, p_bluff = 1
-        # Bet Always: p_nuts = 1, p_bluff = 1
-        
-        # The mixed strategy gives us a distribution over these four options
-        # We can calculate the implied betting frequencies:
+        # Calculate implied betting frequencies for nuts and bluffs
         
         if len(y_strategy) >= 4:
             p_nuts = y_strategy[1] + y_strategy[3]    # Bet Nuts Only + Bet Always
             p_bluff = y_strategy[2] + y_strategy[3]   # Bluff Only + Bet Always
         else:
-            # If we only have 2 Y strategies from the solver, interpret them differently
-            # This means the solver found that only 2 of Y's 4 strategies are used
-            p_nuts = y_strategy[1] if len(y_strategy) >= 2 else 0  # Assume second strategy is betting nuts
-            p_bluff = 0  # No bluffing in optimal strategy
+            # Handle reduced strategy space if solver eliminated dominated strategies
+            p_nuts = 0
+            p_bluff = 0
+            for i, prob in enumerate(y_strategy):
+                if i == 1:  # Bet Nuts Only
+                    p_nuts += prob
+                elif i == 2:  # Bluff Only  
+                    p_bluff += prob
+                elif i == 3:  # Bet Always
+                    p_nuts += prob
+                    p_bluff += prob
         
         interpretation = []
         interpretation.append("STRATEGY INTERPRETATION")

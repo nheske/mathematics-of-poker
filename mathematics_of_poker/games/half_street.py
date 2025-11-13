@@ -56,15 +56,15 @@ class HalfStreetGame(ABC):
         payoff_x, payoff_y = self.get_payoff_matrix()
         
         # For zero-sum games, we can solve using linear programming
-        # Our payoff matrix has X as row player and Y as column player
-        # So payoff_y[i,j] is Y's payoff when X plays strategy i and Y plays strategy j
-        # We need to transpose this to get Y as row player for the standard solver
-        optimal_y, optimal_x, game_value = self._solve_zero_sum_game(payoff_y.T)
+        # Player Y maximizes their payoff, Player X minimizes Y's payoff
+        # Standard format: rows = strategies for row player (Y), cols = strategies for col player (X)
+        # Our matrix has rows = X strategies, cols = Y strategies, so we transpose
+        optimal_x, optimal_y, game_value = self._solve_zero_sum_game(payoff_y.T)
         
         return {
             'x_strategy': optimal_x,
-            'y_strategy': optimal_y, 
-            'game_value': -game_value,  # Negate because we solved from Y's perspective
+            'y_strategy': optimal_y,
+            'game_value': game_value,
             'x_labels': self.get_strategy_labels()[0],
             'y_labels': self.get_strategy_labels()[1]
         }

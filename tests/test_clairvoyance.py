@@ -75,6 +75,9 @@ class TestClairvoyanceGame(unittest.TestCase):
         solution = self.game.solve_nash_equilibrium()
         is_equilibrium = self.game.verify_equilibrium(solution)
         self.assertTrue(is_equilibrium)
+        self.assertAlmostEqual(solution['call_probability'], 2 / 3)
+        self.assertAlmostEqual(solution['bluff_fraction'], 1 / 3)
+        self.assertAlmostEqual(solution['game_value'], -1 / 3)
     
     def test_different_bet_sizes(self):
         """Test game behavior with different bet sizes."""
@@ -84,13 +87,17 @@ class TestClairvoyanceGame(unittest.TestCase):
             with self.subTest(bet_size=bet_size):
                 game = ClairvoyanceGame(pot_size=1.0, bet_size=bet_size)
                 solution = game.solve_nash_equilibrium()
-                
-                # Solution should be valid
                 self.assertTrue(game.verify_equilibrium(solution))
-                
-                # Game value should be reasonable
-                game_value = solution['game_value']
-                self.assertIsInstance(game_value, (int, float))
+
+                expected_bluff = bet_size / (2 * game.pot_size + bet_size)
+                expected_call = (2 * game.pot_size) / (2 * game.pot_size + bet_size)
+
+                self.assertAlmostEqual(solution['bluff_fraction'], expected_bluff)
+                self.assertAlmostEqual(solution['call_probability'], expected_call)
+                self.assertAlmostEqual(
+                    solution['game_value'],
+                    -game.pot_size * bet_size / (2 * game.pot_size + bet_size),
+                )
     
     def test_payoff_calculation_edge_cases(self):
         """Test specific payoff calculations."""
