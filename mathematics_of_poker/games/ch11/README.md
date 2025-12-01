@@ -41,6 +41,14 @@ For the closed-form solution instead, use:
 python examples\clairvoyance_example.py --solver analytic
 ```
 
+Typical analytic output (P = B = 1):
+
+```
+Game value (X): -0.333333
+X call probability: 0.666667
+Y bluff frequency: 0.333333
+```
+
 Key flags:
 
 - `--solver {analytic|cfr|mccfr}` selects the algorithm
@@ -91,6 +99,22 @@ estimate = simulate_expected_value(game, samples=100_000)
 python examples\zero_one_game_1.py --buckets 40 --iterations 120000 --plot
 ```
 
+Sample run (buckets=40, iterations=120000):
+
+```
+ANALYTIC SOLUTION
+===================
+Threshold (Y bets below this hand strength): 0.5000
+Player X expected value: -0.2500
+Player Y expected value: 0.2500
+
+MONTE CARLO CHECK
+==================
+Estimated EV for Player X: -0.2478
+Analytic EV:               -0.2500
+Absolute error:            0.0022
+```
+
 ## [0,1] Game #2 (Example 11.3)
 
 This extension allows Player X to fold facing a bet, so the initial pot size ``P`` now
@@ -124,6 +148,23 @@ estimate = simulate_expected_value(game, samples=200_000, seed=7)
 
 ```powershell
 python examples\zero_one_game_2.py --pot 1.0 --buckets 40 --iterations 250000 --simulate 50000
+```
+
+Sample run (pot=1, buckets=40, iterations=250000):
+
+```
+Analytic solution thresholds:
+	Value Threshold: 0.214286
+	Call Threshold: 0.428571
+	Bluff Threshold: 0.642857
+	Expected value for X: -0.173469
+	Expected value for Y: 0.173469
+Monte Carlo EV estimate for X (samples=50000): -0.176400
+
+Running MCCFR ...
+	Estimated game value (X): -0.098082
+	Estimated thresholds (value / bluff / call): 0.287 0.887 0.362
+	Analytic thresholds: 0.214 / 0.643 / 0.429
 ```
 
 ## Tests
