@@ -9,9 +9,6 @@ This project implements various game-theoretic models and toy games discussed in
 10. Facing The Nemesis: Game Theory
 11. One Side of the Street: Half-Street Games
     * Example 11.1 - The Clairvoyance Game
-        * pure math
-        * linear programming
-        * self-play, fictitious play, counterfactual regret minimization
     * Example 11.2 - [0, 1] Game #1 
     * Example 11.3 - [O, 1] Game #2 
 12. Headsup With High Blinds: The Jam-or-Fold Game
@@ -122,6 +119,16 @@ This will demonstrate the Clairvoyance Game with detailed analysis including:
 - Optimal mixed strategies  
 - Game value and strategic interpretation
 - Sensitivity analysis for different bet sizes
+
+To visualize the Monte Carlo CFR diagnostics, install `matplotlib` and run:
+
+```bash
+pip install matplotlib
+python examples/clairvoyance_example.py --solver mccfr --plot --plot-file mccfr_diagnostics.png
+```
+
+The `--plot` flag opens an interactive window when supported, while `--plot-file` saves the
+visualization for headless environments.
 
 ### Current Limitations
 

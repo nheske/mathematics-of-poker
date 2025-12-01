@@ -14,8 +14,17 @@ Game Description:
 """
 
 import numpy as np
-from typing import Tuple, Dict
-from .half_street import HalfStreetGame
+from typing import Tuple, Dict, Optional
+
+from ..game_tree import (
+    ChanceDistribution,
+    GameTree,
+    GameTreeNode,
+    InformationSet,
+    Player,
+)
+from ..mccfr import MonteCarloCFR
+from ..half_street import HalfStreetGame
 
 
 class ClairvoyanceGame(HalfStreetGame):
@@ -111,12 +120,182 @@ class ClairvoyanceGame(HalfStreetGame):
             "bluff_fraction": bluff_fraction,
             "call_probability": call_probability,
         }
+
+    def solve_cfr_equilibrium(self, iterations: int = 10000, seed: Optional[int] = None) -> Dict:
+        """Approximate the equilibrium using regret-matching CFR."""
+
+        solution = super().solve_cfr_equilibrium(iterations=iterations, seed=seed)
+        x_strategy = solution["x_strategy"]
+        y_strategy = solution["y_strategy"]
+
+        solution.update(
+            {
+                "call_probability": float(x_strategy[1]) if len(x_strategy) > 1 else 0.0,
+                "bluff_fraction": float(y_strategy[2] + y_strategy[3]) if len(y_strategy) > 3 else 0.0,
+            }
+        )
+
+        return solution
+
+    def solve_mccfr_equilibrium(
+        self, iterations: int = 50000, seed: Optional[int] = None
+    ) -> Dict:
+        """Approximate the equilibrium using external-sampling MCCFR."""
+
+        tree = self.build_game_tree()
+        solver = MonteCarloCFR(tree)
+        result = solver.run(iterations=iterations, seed=seed)
+
+        y_nuts_avg = result.average_strategy_dict("Y:nuts")
+        y_bluff_avg = result.average_strategy_dict("Y:bluff")
+        x_resp_avg = result.average_strategy_dict("X:bet_response")
+
+        y_nuts_reg = result.cumulative_regret_dict("Y:nuts")
+        y_bluff_reg = result.cumulative_regret_dict("Y:bluff")
+        x_resp_reg = result.cumulative_regret_dict("X:bet_response")
+
+        value_bet = y_nuts_avg.get("bet", 0.0)
+        bluff_bet = y_bluff_avg.get("bet", 0.0)
+        call_prob = x_resp_avg.get("call", 0.0)
+
+        y_strategy = self._compose_y_strategy(value_bet, bluff_bet)
+        x_strategy = np.array([1.0 - call_prob, call_prob])
+
+        game_value = result.expected_value()
+
+        solution = {
+            "x_strategy": x_strategy,
+            "y_strategy": y_strategy,
+            "game_value": game_value,
+            "x_labels": self.get_strategy_labels()[0],
+            "y_labels": self.get_strategy_labels()[1],
+            "call_probability": call_prob,
+            "bluff_fraction": bluff_bet,
+            "value_bet_fraction": value_bet,
+            "iterations": iterations,
+            "info_set_strategies": {
+                "Y:nuts": y_nuts_avg,
+                "Y:bluff": y_bluff_avg,
+                "X:bet_response": x_resp_avg,
+            },
+            "info_set_regrets": {
+                "Y:nuts": y_nuts_reg,
+                "Y:bluff": y_bluff_reg,
+                "X:bet_response": x_resp_reg,
+            },
+        }
+
+        solution["is_equilibrium"] = self.verify_equilibrium(solution, tolerance=0.05)
+
+        return solution
+
+    @staticmethod
+    def _compose_y_strategy(value_bet: float, bluff_bet: float) -> np.ndarray:
+        """Map per-hand betting frequencies to the four pure strategies."""
+
+        w_both = max(0.0, min(value_bet, bluff_bet))
+        w_value_only = max(0.0, value_bet - w_both)
+        w_bluff_only = max(0.0, bluff_bet - w_both)
+        w_check_always = max(0.0, 1.0 - (w_both + w_value_only + w_bluff_only))
+
+        strategy = np.array([w_check_always, w_value_only, w_bluff_only, w_both])
+        total = strategy.sum()
+        if total > 0:
+            strategy /= total
+        else:
+            strategy = np.array([1.0, 0.0, 0.0, 0.0])
+        return strategy
     
     def get_strategy_labels(self) -> Tuple[list, list]:
         """Get human-readable labels for strategies."""
         x_labels = ["Always Fold", "Always Call"]
         y_labels = ["Check Always", "Bet Nuts Only", "Bluff Only", "Bet Always"]
         return x_labels, y_labels
+
+    def build_game_tree(self) -> GameTree:
+        """Construct the extensive-form tree for the Clairvoyance game."""
+
+        P = float(self.pot_size)
+        B = float(self.bet_size)
+
+        root = GameTreeNode(player=Player.CHANCE)
+
+        info_sets: Dict[str, InformationSet] = {}
+
+        y_nuts_info = InformationSet(
+            "Y:nuts", player=Player.Y, description="Y decisions with winning hand"
+        )
+        y_bluff_info = InformationSet(
+            "Y:bluff", player=Player.Y, description="Y decisions with losing hand"
+        )
+        x_response_info = InformationSet(
+            "X:bet_response", player=Player.X, description="X response after Y bets"
+        )
+
+        for info in (y_nuts_info, y_bluff_info, x_response_info):
+            info_sets[info.key] = info
+
+        y_nuts_node = GameTreeNode(player=Player.Y, info_set=y_nuts_info)
+        y_nuts_info.add_node(y_nuts_node)
+
+        y_bluff_node = GameTreeNode(player=Player.Y, info_set=y_bluff_info)
+        y_bluff_info.add_node(y_bluff_node)
+
+        chance = ChanceDistribution((
+            ("Y hand = nuts", 0.5),
+            ("Y hand = bluff", 0.5),
+        ))
+        chance.validate()
+
+        chance_nodes = {
+            "Y hand = nuts": (y_nuts_node, "nuts"),
+            "Y hand = bluff": (y_bluff_node, "bluff"),
+        }
+
+        for action, prob in chance:
+            node, hand_label = chance_nodes[action]
+            root.add_child(action, node, probability=prob, metadata={"hand": hand_label})
+
+        def terminal(payoff_x: float) -> GameTreeNode:
+            return GameTreeNode(player=Player.TERMINAL, payoffs=(payoff_x, -payoff_x))
+
+        # Y has the nuts
+        y_nuts_node.add_child("check", terminal(-P), metadata={"hand": "nuts", "action": "check"})
+
+        x_vs_nuts = GameTreeNode(player=Player.X, info_set=x_response_info)
+        x_response_info.add_node(x_vs_nuts)
+        y_nuts_node.add_child(
+            "bet",
+            x_vs_nuts,
+            metadata={"hand": "nuts", "action": "bet", "bet_size": B},
+        )
+
+        x_vs_nuts.add_child("fold", terminal(-P), metadata={"response": "fold"})
+        x_vs_nuts.add_child(
+            "call",
+            terminal(-(P + B)),
+            metadata={"response": "call", "pot": P + B},
+        )
+
+        # Y has a bluffing hand
+        y_bluff_node.add_child("check", terminal(P), metadata={"hand": "bluff", "action": "check"})
+
+        x_vs_bluff = GameTreeNode(player=Player.X, info_set=x_response_info)
+        x_response_info.add_node(x_vs_bluff)
+        y_bluff_node.add_child(
+            "bet",
+            x_vs_bluff,
+            metadata={"hand": "bluff", "action": "bet", "bet_size": B},
+        )
+
+        x_vs_bluff.add_child("fold", terminal(-P), metadata={"response": "fold"})
+        x_vs_bluff.add_child(
+            "call",
+            terminal(P + B),
+            metadata={"response": "call", "pot": P + B},
+        )
+
+        return GameTree(root=root, information_sets=info_sets)
     
     def get_mixed_strategy_interpretation(self, solution: Dict) -> str:
         """

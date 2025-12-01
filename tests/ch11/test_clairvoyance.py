@@ -8,9 +8,9 @@ import sys
 import os
 
 # Add the package to the path
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 
-from mathematics_of_poker.games.clairvoyance import ClairvoyanceGame
+from mathematics_of_poker.games.ch11.clairvoyance import ClairvoyanceGame
 
 
 class TestClairvoyanceGame(unittest.TestCase):
@@ -130,6 +130,28 @@ class TestClairvoyanceGame(unittest.TestCase):
         self.assertIsInstance(analysis, str)
         self.assertIn("OPTIMAL STRATEGIES", analysis)
         self.assertIn("Game Value", analysis)
+
+    def test_mccfr_equilibrium(self):
+        """Monte Carlo CFR should approximate the analytic equilibrium."""
+        solution = self.game.solve_mccfr_equilibrium(iterations=40000, seed=1234)
+
+        self.assertIn("info_set_strategies", solution)
+        self.assertIn("info_set_regrets", solution)
+        self.assertAlmostEqual(solution["call_probability"], 2 / 3, delta=0.05)
+        self.assertAlmostEqual(solution["bluff_fraction"], 1 / 3, delta=0.05)
+        self.assertAlmostEqual(solution["game_value"], -1 / 3, delta=0.05)
+
+        expected_actions = {
+            "Y:nuts": {"check", "bet"},
+            "Y:bluff": {"check", "bet"},
+            "X:bet_response": {"call", "fold"},
+        }
+        regrets = solution["info_set_regrets"]
+        for key, actions in expected_actions.items():
+            self.assertIn(key, regrets)
+            self.assertEqual(set(regrets[key].keys()), actions)
+            for value in regrets[key].values():
+                self.assertIsInstance(value, float)
 
 
 class TestClairvoyanceGameEdgeCases(unittest.TestCase):

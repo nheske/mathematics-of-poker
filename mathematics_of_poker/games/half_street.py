@@ -68,6 +68,30 @@ class HalfStreetGame(ABC):
             'x_labels': self.get_strategy_labels()[0],
             'y_labels': self.get_strategy_labels()[1]
         }
+
+    def solve_cfr_equilibrium(self, iterations: int = 10000, seed: Optional[int] = None) -> Dict:
+        """Approximate the Nash equilibrium using regret-matching CFR.
+
+        Args:
+            iterations: Number of regret-matching iterations to run.
+            seed: Optional random seed for reproducibility when tie-breaking is required.
+
+        Returns:
+            Dictionary containing approximate strategies and game value.
+        """
+        payoff_x, payoff_y = self.get_payoff_matrix()
+        optimal_x, optimal_y, game_value = self._solve_regret_matching(
+            payoff_y.T, iterations=iterations, seed=seed
+        )
+
+        return {
+            'x_strategy': optimal_x,
+            'y_strategy': optimal_y,
+            'game_value': game_value,
+            'x_labels': self.get_strategy_labels()[0],
+            'y_labels': self.get_strategy_labels()[1],
+            'iterations': iterations,
+        }
     
     def _solve_zero_sum_game(self, payoff_matrix: np.ndarray) -> Tuple[np.ndarray, np.ndarray, float]:
         """
@@ -87,78 +111,70 @@ class HalfStreetGame(ABC):
         
         # Solve for column player (X) first - they want to minimize row player's payoff
         m, n = payoff_matrix.shape
-        
-        # Add a constant to make all payoffs positive (doesn't change optimal strategies)
-        min_payoff = np.min(payoff_matrix)
-        if min_payoff <= 0:
-            adjusted_matrix = payoff_matrix - min_payoff + 1
-        else:
-            adjusted_matrix = payoff_matrix
-        
-        # Solve for column player (X): minimize v subject to constraints
-        # Variables: [x1, x2, ..., xn, v] where v is the game value
+
         c = np.zeros(n + 1)
-        c[-1] = -1  # We want to minimize v (maximize -v)
-        
-        # Constraints: sum of strategy probabilities = 1, and strategy >= 0
-        # Also: for each row i, sum(A[i,j] * x[j]) >= v
+        c[-1] = 1.0  # Minimise the maximal row payoff v
+
         A_ub = np.zeros((m, n + 1))
-        for i in range(m):
-            A_ub[i, :n] = -adjusted_matrix[i, :]  # Negative because we need >= constraint
-            A_ub[i, -1] = 1
-        
+        A_ub[:, :n] = payoff_matrix
+        A_ub[:, -1] = -1.0
         b_ub = np.zeros(m)
-        
-        # Equality constraint: sum of probabilities = 1
+
         A_eq = np.zeros((1, n + 1))
-        A_eq[0, :n] = 1
-        b_eq = np.array([1])
-        
-        # Bounds: all probabilities >= 0, v unrestricted
+        A_eq[0, :n] = 1.0
+        b_eq = np.array([1.0])
+
         bounds = [(0, None)] * n + [(None, None)]
-        
-        # Solve
-        result = linprog(c, A_ub=A_ub, b_ub=b_ub, A_eq=A_eq, b_eq=b_eq, bounds=bounds, method='highs')
-        
+
+        result = linprog(
+            c,
+            A_ub=A_ub,
+            b_ub=b_ub,
+            A_eq=A_eq,
+            b_eq=b_eq,
+            bounds=bounds,
+            method="highs",
+        )
+
         if not result.success:
             return self._solve_iterative(payoff_matrix)
-        
+
         x_strategy = result.x[:n]
-        game_value_adjusted = result.x[-1]
-        
-        # Convert back to original game value
-        if min_payoff <= 0:
-            game_value = game_value_adjusted + min_payoff - 1
-        else:
-            game_value = game_value_adjusted
-        
-        # Solve for row player (Y) using the transpose
-        # Y wants to maximize their payoff
+        row_value = result.x[-1]
+
+        # Solve for row player (Y) using the dual formulation
         c_y = np.zeros(m + 1)
-        c_y[-1] = 1  # Maximize v
-        
+        c_y[-1] = -1.0  # Maximise row payoff -> minimise -w
+
         A_ub_y = np.zeros((n, m + 1))
-        for j in range(n):
-            A_ub_y[j, :m] = adjusted_matrix[:, j]
-            A_ub_y[j, -1] = -1
-        
+        A_ub_y[:, :m] = -payoff_matrix.T
+        A_ub_y[:, -1] = 1.0
         b_ub_y = np.zeros(n)
-        
+
         A_eq_y = np.zeros((1, m + 1))
-        A_eq_y[0, :m] = 1
-        b_eq_y = np.array([1])
-        
+        A_eq_y[0, :m] = 1.0
+        b_eq_y = np.array([1.0])
+
         bounds_y = [(0, None)] * m + [(None, None)]
-        
-        result_y = linprog(c_y, A_ub=A_ub_y, b_ub=b_ub_y, A_eq=A_eq_y, b_eq=b_eq_y, bounds=bounds_y, method='highs')
-        
+
+        result_y = linprog(
+            c_y,
+            A_ub=A_ub_y,
+            b_ub=b_ub_y,
+            A_eq=A_eq_y,
+            b_eq=b_eq_y,
+            bounds=bounds_y,
+            method="highs",
+        )
+
         if not result_y.success:
-            # Use uniform strategy as fallback
             y_strategy = np.ones(m) / m
         else:
             y_strategy = result_y.x[:m]
-        
-        return x_strategy, y_strategy, game_value
+
+        game_value = -row_value  # convert to column player's perspective
+
+        return self._normalise_strategy(x_strategy), self._normalise_strategy(y_strategy), game_value
     
     def _solve_iterative(self, payoff_matrix: np.ndarray) -> Tuple[np.ndarray, np.ndarray, float]:
         """
@@ -195,6 +211,84 @@ class HalfStreetGame(ABC):
         game_value = float(y_strategy @ payoff_matrix @ x_strategy)
         
         return x_strategy, y_strategy, game_value
+
+    def _solve_regret_matching(
+        self,
+        payoff_matrix: np.ndarray,
+        iterations: int = 10000,
+        seed: Optional[int] = None,
+    ) -> Tuple[np.ndarray, np.ndarray, float]:
+        """Solve a zero-sum game using regret-matching (CFR for normal-form games).
+
+        Args:
+            payoff_matrix: Payoff matrix for the row player (Y).
+            iterations: Number of regret updates to perform.
+            seed: Optional random seed to stabilise tie-breaking.
+
+        Returns:
+            Tuple of (column_strategy, row_strategy, game_value).
+        """
+
+        if iterations <= 0:
+            raise ValueError("iterations must be positive")
+
+        rng = np.random.default_rng(seed)
+
+        m, n = payoff_matrix.shape
+        regrets_row = np.zeros(m)
+        regrets_col = np.zeros(n)
+        strategy_sum_row = np.zeros(m)
+        strategy_sum_col = np.zeros(n)
+
+        # Start with uniform strategies
+        strategy_row = np.ones(m) / m
+        strategy_col = np.ones(n) / n
+
+        for _ in range(iterations):
+            strategy_sum_row += strategy_row
+            strategy_sum_col += strategy_col
+
+            row_payoffs = payoff_matrix @ strategy_col  # payoff per row action
+            col_payoffs = -payoff_matrix.T @ strategy_row  # payoff per column action
+
+            utility_row = row_payoffs @ strategy_row
+            utility_col = col_payoffs @ strategy_col
+
+            regrets_row += row_payoffs - utility_row
+            regrets_col += col_payoffs - utility_col
+
+            strategy_row = self._regrets_to_strategy(regrets_row, rng)
+            strategy_col = self._regrets_to_strategy(regrets_col, rng)
+
+        avg_row = strategy_sum_row / iterations
+        avg_col = strategy_sum_col / iterations
+
+        avg_row = self._normalise_strategy(avg_row)
+        avg_col = self._normalise_strategy(avg_col)
+
+        game_value = float(avg_row @ payoff_matrix @ avg_col)
+
+        return avg_col, avg_row, game_value
+
+    @staticmethod
+    def _regrets_to_strategy(regrets: np.ndarray, rng: np.random.Generator) -> np.ndarray:
+        positive = np.maximum(regrets, 0.0)
+        total = positive.sum()
+        if total > 0:
+            return positive / total
+        # All regrets non-positive: fall back to uniform with minimal random noise
+        uniform = np.ones_like(regrets) / len(regrets)
+        if rng is None:
+            return uniform
+        noise = rng.random(len(regrets)) * 1e-9
+        return HalfStreetGame._normalise_strategy(uniform + noise)
+
+    @staticmethod
+    def _normalise_strategy(strategy: np.ndarray) -> np.ndarray:
+        total = strategy.sum()
+        if total <= 0:
+            return np.ones_like(strategy) / len(strategy)
+        return strategy / total
     
     def analyze_strategies(self, solution: Dict) -> str:
         """

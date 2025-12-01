@@ -6,6 +6,6 @@ including half-street games and their optimal solutions.
 """
 
 from .half_street import HalfStreetGame
-from .clairvoyance import ClairvoyanceGame
+from .ch11 import ClairvoyanceGame
 
 __all__ = ['HalfStreetGame', 'ClairvoyanceGame']
