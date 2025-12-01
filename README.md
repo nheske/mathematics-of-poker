@@ -7,12 +7,12 @@ Python implementation of the toy games from [The Mathematics of Poker](https://w
 This project implements various game-theoretic models and toy games discussed in "The Mathematics of Poker", providing practical Python implementations for educational and research purposes.
 
 10. Facing The Nemesis: Game Theory
-11. One Side of the Street: Half-Street Games
+11. [One Side of the Street: Half-Street Games](mathematics_of_poker/games/ch11/README.md)
     * Example 11.1 - The Clairvoyance Game
     * Example 11.2 - [0, 1] Game #1 
-    * Example 11.3 - [O, 1] Game #2 
+    * Example 11.3 - [0, 1] Game #2 
 12. Headsup With High Blinds: The Jam-or-Fold Game
-    * Example 12.1 - [O, 1] Jam-or-Fold Game #1
+    * Example 12.1 - [0, 1] Jam-or-Fold Game #1
     * Example 12.2 - [0, 1] Jam-or-Fold Game #2
     * Example 12.3 - Jam-or-Fold No-limit Holdem
 13. Poker Made Simple: The AKQ Game
@@ -23,25 +23,26 @@ This project implements various game-theoretic models and toy games discussed in
     * Example 14.2 - AKQ Game #3 
     * Example 14.3 - [0, 1] Game #3
 15. Player X Strikes Back: Full-Street Games
-    * Example 15.1 -AKQ Game #4
+    * Example 15.1 - AKQ Game #4
     * Example 15.2 - AKO Game #5
 16. Small Bets, Big Pots: No-Fold [0,1] Games
     * Example 16.1 - [0, 1] Game #4 
-    * Example 16.2 - [0 ,1] Game #5
-    * Example 16-3 - [0, 1] Game #6 -The Raising Game 
-    * Example 16.4 - [O, 1] Game #7
-    * Example 16.5 - [0,11 Game #8: The Raising Game with Check-Rais
+    * Example 16.2 - [0, 1] Game #5
+    * Example 16.3 - [0, 1] Game #6 – The Raising Game 
+    * Example 16.4 - [0, 1] Game #7
+    * Example 16.5 - [0,1] Game #8: The Raising Game with Check-Raise
 
 ### Currently Implemented
 
 **Chapter 11: Half-Street Games**
 - **Example 11.1 - The Clairvoyance Game**: A simplified poker game where one player has perfect information. Demonstrates Nash equilibrium computation for mixed strategies in zero-sum games.
+- **Example 11.2 - [0,1] Game #1**: No-fold half-street game with continuous hand strengths; highlights threshold betting and MCCFR discretisation.
+- **Example 11.3 - [0,1] Game #2**: Folding allowed for Player X; analytic thresholds vary with pot size and MCCFR recovers the optimal calling range.
 
 ### Planned Implementations
 
 **Chapter 11: One Side of the Street: Half-Street Games**
-- Example 11.2 - [0, 1] Game #1 
-- Example 11.3 - [0, 1] Game #2 
+- Example 11.4+ – Additional threshold and mixed-strategy variants
 
 **Chapter 12: Headsup With High Blinds: The Jam-or-Fold Game**
 - Example 12.1 - [0, 1] Jam-or-Fold Game #1
