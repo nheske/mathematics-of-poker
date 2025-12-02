@@ -39,7 +39,7 @@ This project implements various game-theoretic models and toy games discussed in
 - **Example 11.2 - [0,1] Game #1**: No-fold half-street game with continuous hand strengths; highlights threshold betting and MCCFR discretisation.
 - **Example 11.3 - [0,1] Game #2**: Folding allowed for Player X; analytic thresholds vary with pot size and MCCFR recovers the optimal calling range.
 
-**Chapter 12: Headsup With High Blinds – The Jam-or-Fold Game**
+**Chapter 12: Headsup With High Blinds – The Jam-or-Fold Game** ([details](mathematics_of_poker/games/ch12/ch12_jam_or_fold.md))
 - **Example 12.1 - [0,1] Jam-or-Fold Game #1**: Players jam or fold from the blinds with equal stacks; includes analytic jam/call thresholds, Monte Carlo validation, and MCCFR diagnostics with visualisations.
 
 ### Planned Implementations
@@ -47,10 +47,13 @@ This project implements various game-theoretic models and toy games discussed in
 **Chapter 11: One Side of the Street: Half-Street Games**
 - Example 11.4+ – Additional threshold and mixed-strategy variants
 
-**Chapter 12: Headsup With High Blinds: The Jam-or-Fold Game**
+**Chapter 12: Headsup With High Blinds: The Jam-or-Fold Game** ([details](mathematics_of_poker/games/ch12/ch12_jam_or_fold.md))
 - Example 12.1 - [0, 1] Jam-or-Fold Game #1
 - Example 12.2 - [0, 1] Jam-or-Fold Game #2
 - Example 12.3 - Jam-or-Fold No-limit Holdem
+
+**Chapter 13: AKQ Game** ([placeholder](mathematics_of_poker/games/ch13/ch13_akq_game.md))
+- Example 13.1 - AKQ Game baseline (coming soon)
 
 **And more chapters to follow...**
 
