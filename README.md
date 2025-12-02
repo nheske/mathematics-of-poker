@@ -7,7 +7,7 @@ Python implementation of the toy games from [The Mathematics of Poker](https://w
 This project implements various game-theoretic models and toy games discussed in "The Mathematics of Poker", providing practical Python implementations for educational and research purposes.
 
 10. Facing The Nemesis: Game Theory
-11. [One Side of the Street: Half-Street Games](mathematics_of_poker/games/ch11/README.md)
+11. [One Side of the Street: Half-Street Games](mathematics_of_poker/games/ch11/ch11_half_street_games.md)
     * Example 11.1 - The Clairvoyance Game
     * Example 11.2 - [0, 1] Game #1 
     * Example 11.3 - [0, 1] Game #2 
