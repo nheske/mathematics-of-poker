@@ -14,26 +14,17 @@ import numpy as np
 
 from ..game_tree import GameTree, GameTreeNode, InformationSet, Player
 from ..mccfr import MonteCarloCFR
+from .zero_one_common import ZeroOneBucketGame
 
 
 @dataclass
-class ZeroOneGame2:
+class ZeroOneGame2(ZeroOneBucketGame):
     """[0, 1] Game #2 where X may fold against Y's bet."""
 
-    pot_size: float = 1.0
-    bet_size: float = 1.0
-    num_buckets: int = 40
-
     def __post_init__(self) -> None:
-        if self.pot_size < 0:
-            raise ValueError("pot_size must be non-negative")
-        if self.bet_size <= 0:
-            raise ValueError("bet_size must be positive")
+        super().__post_init__()
         if self.bet_size != 1.0:
             raise ValueError("This implementation assumes unit bet size as in the book example")
-        if self.num_buckets < 2:
-            raise ValueError("num_buckets must be at least 2")
-        self._tree_cache: Optional[GameTree] = None
 
     # ------------------------------------------------------------------
     # Analytic thresholds and expected values
@@ -79,7 +70,13 @@ class ZeroOneGame2:
             "bluff_fraction": max(0.0, 1.0 - b),
         }
 
-    def expected_value_x(self, *, a: Optional[float] = None, b: Optional[float] = None, c: Optional[float] = None) -> float:
+    def expected_value_x(
+        self,
+        *,
+        a: Optional[float] = None,
+        b: Optional[float] = None,
+        c: Optional[float] = None,
+    ) -> float:
         """Closed-form expected value for Player X under threshold strategies."""
 
         if a is None:
@@ -91,7 +88,7 @@ class ZeroOneGame2:
 
         P = self.pot_size
 
-        ev_value = (P - 1.0) * (a ** 2) - P * a
+        ev_value = (P - 1.0) * (a**2) - P * a
         ev_check = P * (b - a) * (b + a - 1.0)
         ev_bluff = (1.0 - b) * (4.0 * a * P + 2.0 * a - P)
         return ev_value + ev_check + ev_bluff
@@ -106,11 +103,11 @@ class ZeroOneGame2:
         root = GameTreeNode(player=Player.CHANCE)
         info_sets: Dict[str, InformationSet] = {}
 
-        prob_bucket = 1.0 / self.num_buckets
+        prob_bucket = self._bucket_probability()
 
         for y_idx in range(self.num_buckets):
             y_value = self._bucket_value(y_idx)
-            y_key = self._y_info_key(y_idx)
+            y_key = self._player_bucket_key("Y", y_idx)
             y_info = InformationSet(
                 y_key,
                 player=Player.Y,
@@ -152,7 +149,7 @@ class ZeroOneGame2:
 
             for x_idx in range(self.num_buckets):
                 x_value = self._bucket_value(x_idx)
-                x_key = self._x_info_key(x_idx)
+                x_key = self._player_bucket_key("X", x_idx)
                 x_info = info_sets.get(x_key)
                 if x_info is None:
                     x_info = InformationSet(
@@ -203,7 +200,7 @@ class ZeroOneGame2:
         info_regrets: Dict[str, Dict[str, float]] = {}
         y_bet_probs = []
         for y_idx in range(self.num_buckets):
-            key = self._y_info_key(y_idx)
+            key = self._player_bucket_key("Y", y_idx)
             strategy = result.average_strategy_dict(key)
             info_strategies[key] = strategy
             info_regrets[key] = result.cumulative_regret_dict(key)
@@ -211,7 +208,7 @@ class ZeroOneGame2:
 
         x_call_probs = []
         for x_idx in range(self.num_buckets):
-            key = self._x_info_key(x_idx)
+            key = self._player_bucket_key("X", x_idx)
             strategy = result.average_strategy_dict(key)
             info_strategies[key] = strategy
             info_regrets[key] = result.cumulative_regret_dict(key)
@@ -235,32 +232,6 @@ class ZeroOneGame2:
     # ------------------------------------------------------------------
     # Helpers
     # ------------------------------------------------------------------
-    def _bucket_value(self, index: int) -> float:
-        return (index + 0.5) / self.num_buckets
-
-    @staticmethod
-    def _y_info_key(index: int) -> str:
-        return f"Y:bucket[{index}]"
-
-    @staticmethod
-    def _x_info_key(index: int) -> str:
-        return f"X:bucket[{index}]"
-
-    def _showdown_payoff(self, x_value: float, y_value: float) -> float:
-        if x_value < y_value:
-            return self.pot_size
-        if y_value < x_value:
-            return -self.pot_size
-        return 0.0
-
-    def _call_payoff(self, x_value: float, y_value: float) -> float:
-        swing = self.pot_size + self.bet_size
-        if x_value < y_value:
-            return swing
-        if y_value < x_value:
-            return -swing
-        return 0.0
-
     def _estimate_y_thresholds(self, bet_probs: list[float]) -> Tuple[float, float]:
         midpoint = 0.0
         for idx, prob in enumerate(bet_probs):

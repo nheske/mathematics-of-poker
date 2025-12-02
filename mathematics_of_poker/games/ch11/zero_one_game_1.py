@@ -15,24 +15,12 @@ import numpy as np
 
 from ..game_tree import GameTree, GameTreeNode, InformationSet, Player
 from ..mccfr import MonteCarloCFR
+from .zero_one_common import ZeroOneBucketGame
 
 
 @dataclass
-class ZeroOneGame1:
+class ZeroOneGame1(ZeroOneBucketGame):
     """Approximate the [0, 1] Game #1 with discrete buckets for MCCFR analysis."""
-
-    pot_size: float = 1.0
-    bet_size: float = 1.0
-    num_buckets: int = 40
-
-    def __post_init__(self) -> None:
-        if self.pot_size < 0:
-            raise ValueError("pot_size must be non-negative")
-        if self.bet_size <= 0:
-            raise ValueError("bet_size must be positive")
-        if self.num_buckets < 2:
-            raise ValueError("num_buckets must be at least 2")
-        self._tree_cache: Optional[GameTree] = None
 
     # ------------------------------------------------------------------
     # Analytic solution helpers
@@ -78,8 +66,8 @@ class ZeroOneGame1:
         root = GameTreeNode(player=Player.CHANCE)
         info_sets: Dict[str, InformationSet] = {}
 
-        prob_y = 1.0 / self.num_buckets
-        prob_x = 1.0 / self.num_buckets
+        prob_y = self._bucket_probability()
+        prob_x = self._bucket_probability()
 
         for y_idx in range(self.num_buckets):
             y_value = self._bucket_value(y_idx)
@@ -159,33 +147,12 @@ class ZeroOneGame1:
     # Helpers
     # ------------------------------------------------------------------
     def _info_key(self, bucket_index: int) -> str:
-        return f"Y:bucket[{bucket_index}]"
-
-    def _bucket_value(self, bucket_index: int) -> float:
-        return (bucket_index + 0.5) / self.num_buckets
+        return self._player_bucket_key("Y", bucket_index)
 
     def _terminal_payoff_x(self, action: str, y_value: float, x_value: float) -> float:
-        winner = self._showdown_winner(y_value, x_value)
         if action == "check":
-            swing = self.pot_size
-        else:
-            swing = self.pot_size + self.bet_size
-
-        if winner > 0:
-            return swing
-        if winner < 0:
-            return -swing
-        return 0.0
-
-    @staticmethod
-    def _showdown_winner(y_value: float, x_value: float) -> int:
-        """Return +1 if X wins, -1 if Y wins, 0 for tie."""
-
-        if x_value < y_value:
-            return 1
-        if y_value < x_value:
-            return -1
-        return 0
+            return self._showdown_payoff(x_value, y_value)
+        return self._call_payoff(x_value, y_value)
 
     @staticmethod
     def _integral_linear(a: float, b: float) -> float:
