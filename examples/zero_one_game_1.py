@@ -14,6 +14,7 @@ from mathematics_of_poker.games.ch11.zero_one_game_1 import (  # noqa: E402
     ZeroOneGame1,
     simulate_expected_value,
 )
+from mathematics_of_poker.utils.plotting import normalize_regret_values  # noqa: E402
 
 
 def parse_args() -> argparse.Namespace:
@@ -108,7 +109,12 @@ def maybe_plot(result: dict, output_path: Optional[str]) -> None:
         return
 
     strategies = result["info_set_strategies"]
-    regrets = result.get("info_set_regrets")
+    regrets = result.get("info_set_regrets") or {}
+    normalization = float(result.get("iterations", 0) or 0)
+    normalized_regrets = {
+        key: normalize_regret_values(regret_dict, normalization=normalization)
+        for key, regret_dict in regrets.items()
+    }
     buckets = sorted(strategies.keys(), key=lambda k: int(k.split("[")[1][:-1]))
 
     bet_probs = [strategies[key].get("bet", 0.0) for key in buckets]
@@ -120,11 +126,16 @@ def maybe_plot(result: dict, output_path: Optional[str]) -> None:
     ax.set_ylabel("Bet probability")
     ax.set_ylim(0.0, 1.0)
 
-    if regrets:
+    if normalized_regrets:
         ax2 = ax.twinx()
-        regret_vals = [regrets[key].get("bet", 0.0) for key in buckets]
-        ax2.plot(range(len(buckets)), regret_vals, color="#DD8452", label="Cumulative regret (bet)")
-        ax2.set_ylabel("Cumulative regret")
+        regret_vals = [normalized_regrets.get(key, {}).get("bet", 0.0) for key in buckets]
+        ax2.plot(
+            range(len(buckets)),
+            regret_vals,
+            color="#DD8452",
+            label="Normalised regret (bet)",
+        )
+        ax2.set_ylabel("Regret per iteration")
         ax2.legend(loc="upper right")
 
     plt.tight_layout()

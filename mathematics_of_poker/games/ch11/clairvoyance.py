@@ -24,7 +24,7 @@ from ..game_tree import (
     Player,
 )
 from ..mccfr import MonteCarloCFR
-from ..half_street import HalfStreetGame
+from .half_street import HalfStreetGame
 
 
 class ClairvoyanceGame(HalfStreetGame):

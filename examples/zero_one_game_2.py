@@ -10,10 +10,11 @@ from typing import Optional
 # Ensure package imports work when running from a cloned repository
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from mathematics_of_poker.games.ch11.zero_one_game_2 import (
+from mathematics_of_poker.games.ch11.zero_one_game_2 import (  # noqa: E402
     ZeroOneGame2,
     simulate_expected_value,
 )
+from mathematics_of_poker.utils.plotting import normalize_regret_values  # noqa: E402
 
 
 def main(argv: Optional[list[str]] = None) -> int:
@@ -39,6 +40,17 @@ def main(argv: Optional[list[str]] = None) -> int:
         type=int,
         default=0,
         help="If >0, number of Monte Carlo samples to estimate EV under analytic thresholds",
+    )
+    parser.add_argument(
+        "--plot",
+        action="store_true",
+        help="Display matplotlib charts for betting/calling strategies (requires GUI backend)",
+    )
+    parser.add_argument(
+        "--plot-file",
+        type=str,
+        default=None,
+        help="Optional path to save MCCFR diagnostics figure",
     )
     args = parser.parse_args(argv)
 
@@ -66,7 +78,89 @@ def main(argv: Optional[list[str]] = None) -> int:
     )
     print(f"  Analytic thresholds: {analytic['value_threshold']:.3f} / {analytic['bluff_threshold']:.3f} / {analytic['call_threshold']:.3f}")
 
+    if args.plot or args.plot_file:
+        maybe_plot(result, args.plot_file)
+
     return 0
+
+
+def _bucket_index(key: str) -> int:
+    return int(key.split("[")[1][:-1])
+
+
+def maybe_plot(result: dict, output_path: Optional[str]) -> None:
+    try:
+        import matplotlib.pyplot as plt  # type: ignore
+    except ImportError:  # pragma: no cover
+        print("matplotlib is not installed; skipping plot.")
+        return
+
+    strategies: dict[str, dict[str, float]] = result.get("info_set_strategies", {})
+    regrets: dict[str, dict[str, float]] = result.get("info_set_regrets", {})
+    normalization = float(result.get("iterations", 0) or 0)
+    normalized_regrets = {
+        key: normalize_regret_values(value, normalization=normalization)
+        for key, value in regrets.items()
+    }
+
+    y_keys = sorted((k for k in strategies if k.startswith("Y:")), key=_bucket_index)
+    x_keys = sorted((k for k in strategies if k.startswith("X:")), key=_bucket_index)
+
+    if not y_keys or not x_keys:
+        print("No strategy data available for plotting.")
+        return
+
+    y_bet_probs = [strategies[key].get("bet", 0.0) for key in y_keys]
+    x_call_probs = [strategies[key].get("call", 0.0) for key in x_keys]
+
+    fig, (ax_y, ax_x) = plt.subplots(2, 1, figsize=(10, 6), sharex=True)
+
+    ax_y.bar(range(len(y_keys)), y_bet_probs, color="#4C72B0")
+    ax_y.set_ylabel("Bet probability")
+    ax_y.set_title("Player Y average bet probability per bucket")
+    ax_y.set_ylim(0.0, 1.0)
+
+    if normalized_regrets:
+        y_regrets = [normalized_regrets.get(key, {}).get("bet", 0.0) for key in y_keys]
+        ax_y_twin = ax_y.twinx()
+        ax_y_twin.plot(
+            range(len(y_keys)),
+            y_regrets,
+            color="#DD8452",
+            label="Normalised regret (bet)",
+        )
+        ax_y_twin.set_ylabel("Regret per iteration")
+        ax_y_twin.legend(loc="upper right")
+
+    ax_x.bar(range(len(x_keys)), x_call_probs, color="#55A868")
+    ax_x.set_xlabel("Bucket index")
+    ax_x.set_ylabel("Call probability")
+    ax_x.set_title("Player X average call probability per bucket")
+    ax_x.set_ylim(0.0, 1.0)
+
+    if normalized_regrets:
+        x_regrets = [normalized_regrets.get(key, {}).get("call", 0.0) for key in x_keys]
+        ax_x_twin = ax_x.twinx()
+        ax_x_twin.plot(
+            range(len(x_keys)),
+            x_regrets,
+            color="#C44E52",
+            label="Normalised regret (call)",
+        )
+        ax_x_twin.set_ylabel("Regret per iteration")
+        ax_x_twin.legend(loc="upper right")
+
+    plt.tight_layout()
+
+    if output_path:
+        fig.savefig(output_path, bbox_inches="tight")
+        print(f"Saved plot to {output_path}")
+
+    backend = plt.get_backend().lower()
+    non_interactive = any(tag in backend for tag in ("agg", "pdf", "svg", "ps", "cairo"))
+    if not non_interactive:
+        plt.show()
+    plt.close(fig)
 
 
 if __name__ == "__main__":

@@ -15,6 +15,10 @@ one-decision-point structure.
 
 Planned additions for this chapter include further threshold-based half-street variants.
 
+> **Tip:** Generated plots from the example scripts are routed to a `plots/` directory in these
+> snippets. The repository ignores that folder by default, keeping diagnostic PNG files out of
+> version control. Create it once (`mkdir plots`) and point `--plot-file` there for all runs.
+
 ## Clairvoyance Game (Example 11.1)
 
 The Clairvoyance Game models a value/bluff decision for Player Y, who has perfect information
@@ -32,7 +36,7 @@ about hand strength. Our implementation provides:
 From the repository root:
 
 ```powershell
-python examples\clairvoyance_example.py --solver mccfr --iterations 50000 --plot --plot-file ch11_clairvoyance.png
+python examples\clairvoyance_example.py --solver mccfr --iterations 50000 --plot --plot-file plots\ch11_clairvoyance.png
 ```
 
 For the closed-form solution instead, use:
@@ -96,7 +100,7 @@ estimate = simulate_expected_value(game, samples=100_000)
 ### Running the example script
 
 ```powershell
-python examples\zero_one_game_1.py --buckets 40 --iterations 120000 --plot
+python examples\zero_one_game_1.py --buckets 40 --iterations 120000 --plot --plot-file plots\ch11_zero_one.png
 ```
 
 Sample run (buckets=40, iterations=120000):
@@ -147,7 +151,7 @@ estimate = simulate_expected_value(game, samples=200_000, seed=7)
 ### Running the example script
 
 ```powershell
-python examples\zero_one_game_2.py --pot 1.0 --buckets 40 --iterations 250000 --simulate 50000
+python examples\zero_one_game_2.py --pot 1.0 --buckets 40 --iterations 250000 --simulate 50000 --plot --plot-file plots\ch11_zero_one2.png
 ```
 
 Sample run (pot=1, buckets=40, iterations=250000):
@@ -166,6 +170,14 @@ Running MCCFR ...
 	Estimated thresholds (value / bluff / call): 0.287 0.887 0.362
 	Analytic thresholds: 0.214 / 0.643 / 0.429
 ```
+
+Key flags:
+
+- `--simulate N` runs a Monte Carlo EV sanity check with `N` samples.
+- `--plot` enables interactive charts for Player Y's betting and Player X's calling buckets (requires a GUI backend).
+- `--plot-file PATH` writes the same chart to disk—combine with `--plot` for both, or use alone on a headless machine.
+
+The saved figure visualises Y's bet probability per bucket (plus regret per iteration) on the top axis and X's call probability on the bottom axis, mirroring the diagnostics available for Example 11.2.
 
 ## Tests
 

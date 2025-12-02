@@ -125,11 +125,13 @@ To visualize the Monte Carlo CFR diagnostics, install `matplotlib` and run:
 
 ```bash
 pip install matplotlib
-python examples/clairvoyance_example.py --solver mccfr --plot --plot-file mccfr_diagnostics.png
+mkdir -p plots  # use 'mkdir plots' on Windows PowerShell
+python examples/clairvoyance_example.py --solver mccfr --plot --plot-file plots/mccfr_diagnostics.png
 ```
 
 The `--plot` flag opens an interactive window when supported, while `--plot-file` saves the
-visualization for headless environments.
+visualization into the `plots/` folder for headless environments and keeps generated PNGs out of
+version control.
 
 ### Current Limitations
 

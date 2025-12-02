@@ -125,11 +125,13 @@ class ZeroOneGame1(ZeroOneBucketGame):
         result = solver.run(iterations=iterations, seed=seed)
 
         info_strategies: Dict[str, Dict[str, float]] = {}
+        info_regrets: Dict[str, Dict[str, float]] = {}
         bet_probabilities = []
         for y_idx in range(self.num_buckets):
             key = self._info_key(y_idx)
             strategy = result.average_strategy_dict(key)
             info_strategies[key] = strategy
+            info_regrets[key] = result.cumulative_regret_dict(key)
             bet_probabilities.append(strategy.get("bet", 0.0))
 
         estimated_threshold = self._estimate_threshold(bet_probabilities)
@@ -137,6 +139,7 @@ class ZeroOneGame1(ZeroOneBucketGame):
         return {
             "game_value": result.expected_value(),
             "info_set_strategies": info_strategies,
+            "info_set_regrets": info_regrets,
             "estimated_threshold": estimated_threshold,
             "optimal_threshold": self.optimal_threshold(),
             "iterations": iterations,
