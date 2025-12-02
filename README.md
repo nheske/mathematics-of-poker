@@ -39,6 +39,9 @@ This project implements various game-theoretic models and toy games discussed in
 - **Example 11.2 - [0,1] Game #1**: No-fold half-street game with continuous hand strengths; highlights threshold betting and MCCFR discretisation.
 - **Example 11.3 - [0,1] Game #2**: Folding allowed for Player X; analytic thresholds vary with pot size and MCCFR recovers the optimal calling range.
 
+**Chapter 12: Headsup With High Blinds – The Jam-or-Fold Game**
+- **Example 12.1 - [0,1] Jam-or-Fold Game #1**: Players jam or fold from the blinds with equal stacks; includes analytic jam/call thresholds, Monte Carlo validation, and MCCFR diagnostics with visualisations.
+
 ### Planned Implementations
 
 **Chapter 11: One Side of the Street: Half-Street Games**
