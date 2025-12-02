@@ -11,11 +11,11 @@ This project implements various game-theoretic models and toy games discussed in
     * Example 11.1 - The Clairvoyance Game
     * Example 11.2 - [0, 1] Game #1 
     * Example 11.3 - [0, 1] Game #2 
-12. Headsup With High Blinds: The Jam-or-Fold Game
+12. [Headsup With High Blinds: The Jam-or-Fold Game](mathematics_of_poker/games/ch12/ch12_jam_or_fold.md)
     * Example 12.1 - [0, 1] Jam-or-Fold Game #1
     * Example 12.2 - [0, 1] Jam-or-Fold Game #2
     * Example 12.3 - Jam-or-Fold No-limit Holdem
-13. Poker Made Simple: The AKQ Game
+13. [Poker Made Simple: The AKQ Game](mathematics_of_poker/games/ch13/ch13_akq_game.md)
     * Example 13.1 - AKO Game #1 
     * Example 13.2 - AKQ Game #2
 14. You Don't Have To Guess: No-Limit Bet Sizing
