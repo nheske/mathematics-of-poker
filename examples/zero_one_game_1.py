@@ -23,7 +23,7 @@ def parse_args() -> argparse.Namespace:
         "--buckets",
         type=int,
         default=40,
-        help="Number of buckets for discretising the [0,1] interval (default: 40)",
+    help="Number of buckets for discretizing the [0,1] interval (default: 40)",
     )
     parser.add_argument(
         "--iterations",

@@ -28,7 +28,7 @@ def parse_args() -> argparse.Namespace:
         "--buckets",
         type=int,
         default=40,
-        help="Number of hand-strength buckets for MCCFR discretisation (default: 40)",
+    help="Number of hand-strength buckets for MCCFR discretization (default: 40)",
     )
     parser.add_argument(
         "--iterations",
@@ -203,6 +203,64 @@ def main() -> None:
     print(f"Game value (attacker):    {result['game_value']:.4f}")
     print(f"Attacker EV (MCCFR):      {result['attacker_value']:.4f}")
     print(f"Defender EV (MCCFR):      {result['defender_value']:.4f}")
+    print()
+
+    strategies = result.get("info_set_strategies", {})
+    jam_entries: list[tuple[int, float]] = []
+    call_entries: list[tuple[int, float]] = []
+    for key, strategy in strategies.items():
+        if key.startswith("Y:"):
+            jam_entries.append((_bucket_index(key), strategy.get("jam", 0.0)))
+        elif key.startswith("X:"):
+            call_entries.append((_bucket_index(key), strategy.get("call", 0.0)))
+
+    num_buckets = game.num_buckets
+    bucket_half = 0.5 / num_buckets
+
+    def _midpoint(index: int) -> float:
+        return (index + 0.5) / num_buckets
+
+    def _avg(values: list[float]) -> float:
+        return sum(values) / len(values) if values else 0.0
+
+    jam_threshold = analytic["jam_threshold"]
+    jam_value_region = [prob for idx, prob in jam_entries if _midpoint(idx) <= jam_threshold + bucket_half]
+    jam_fold_region = [prob for idx, prob in jam_entries if _midpoint(idx) > jam_threshold + bucket_half]
+
+    call_threshold = analytic["call_threshold"]
+    call_value_region = [prob for idx, prob in call_entries if _midpoint(idx) <= call_threshold + bucket_half]
+    call_fold_region = [prob for idx, prob in call_entries if _midpoint(idx) > call_threshold + bucket_half]
+
+    avg_jam_value = _avg(jam_value_region)
+    avg_jam_above = _avg(jam_fold_region)
+    avg_call_value = _avg(call_value_region)
+    avg_call_above = _avg(call_fold_region)
+
+    print("Jam/call takeaway:")
+    if avg_jam_above <= 0.05:
+        print(
+            "  Y jams value hands aggressively and all but shuts down once past the"
+            " analytic threshold—no light jams needed."
+        )
+    else:
+        print(
+            "  Y still sprinkles in jams above the threshold; expect some light"
+            " pressure in the fold region."
+        )
+    if avg_call_above <= 0.05:
+        print(
+            "  X responds by calling tightly past the defense line, folding almost"
+            " everything that should decline the jam."
+        )
+    else:
+        print(
+            "  X continues with a wider defence above the analytic call point—"
+            "consider more iterations or buckets if you expect a sharper cutoff."
+        )
+    print(f"  Avg jam prob. ≤ jam threshold:  {avg_jam_value:.3f}")
+    print(f"  Avg jam prob. > jam threshold:   {avg_jam_above:.3f}")
+    print(f"  Avg call prob. ≤ call threshold: {avg_call_value:.3f}")
+    print(f"  Avg call prob. > call threshold:  {avg_call_above:.3f}")
     print()
 
     if args.plot or args.plot_file:

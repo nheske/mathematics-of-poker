@@ -2,7 +2,7 @@
 
 Player Y can bet or check; if Y bets, Player X may call or fold. Hands are real numbers in
 ``[0, 1]`` with lower values stronger. We model both the analytic threshold solution and a
-discretised extensive-form tree for MCCFR analysis.
+discretized extensive-form tree for MCCFR analysis.
 """
 
 from __future__ import annotations
@@ -94,7 +94,7 @@ class ZeroOneGame2(ZeroOneBucketGame):
         return ev_value + ev_check + ev_bluff
 
     # ------------------------------------------------------------------
-    # Discretised extensive-form tree for MCCFR
+    # Discretized extensive-form tree for MCCFR
     # ------------------------------------------------------------------
     def build_game_tree(self) -> GameTree:
         if self._tree_cache is not None:

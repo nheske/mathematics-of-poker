@@ -21,7 +21,7 @@ def main(argv: Optional[list[str]] = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--pot", type=float, default=1.0, help="Initial pot size P")
     parser.add_argument(
-        "--buckets", type=int, default=40, help="Number of discretisation buckets for MCCFR"
+    "--buckets", type=int, default=40, help="Number of discretization buckets for MCCFR"
     )
     parser.add_argument(
         "--iterations",
