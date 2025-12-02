@@ -6,6 +6,8 @@ Python implementation of the toy games from [The Mathematics of Poker](https://w
 
 This project implements various game-theoretic models and toy games discussed in "The Mathematics of Poker", providing practical Python implementations for educational and research purposes.
 
+
+
 10. Facing The Nemesis: Game Theory
 11. [One Side of the Street: Half-Street Games](mathematics_of_poker/games/ch11/ch11_half_street_games.md)
     * Example 11.1 - The Clairvoyance Game
@@ -68,7 +70,18 @@ This project implements various game-theoretic models and toy games discussed in
 mathematics-of-poker/
 ├── mathematics_of_poker/     # Main package directory
 │   ├── __init__.py          # Package initialization
-│   ├── games/               # Game implementations
+│   ├── games/               # Game implementations by chapter
+│   │   ├── ch11/            # Half-street games
+│   │   │   ├── ch11_half_street_games.md
+│   │   │   ├── clairvoyance.py
+│   │   │   └── ...
+│   │   ├── ch12/            # Jam-or-fold games
+│   │   │   ├── ch12_jam_or_fold.md
+│   │   │   ├── jam_or_fold_game_1.py
+│   │   │   └── ...
+│   │   ├── ch13/            # AKQ game placeholder
+│   │   │   └── ch13_akq_game.md
+│   │   └── __init__.py
 │   ├── models/              # Data models and structures
 │   └── utils/               # Utility functions
 ├── tests/                   # Test suite
@@ -93,55 +106,13 @@ pip install -e .
 pip install -r requirements-dev.txt
 ```
 
-## Usage
+## Requirements
 
-### The Clairvoyance Game (Example 11.1)
+- Python 3.7+
+- NumPy (for numerical computations)
+- SciPy (for optimization algorithms)
+- Matplotlib (for visualizations)
 
-```python
-from mathematics_of_poker.games import ClairvoyanceGame
-
-# Create the game with default parameters (pot=1, bet=1)
-game = ClairvoyanceGame(pot_size=1.0, bet_size=1.0)
-
-# Solve for Nash equilibrium
-solution = game.solve_nash_equilibrium()
-
-# Display results
-print(game.analyze_strategies(solution))
-print(game.get_mixed_strategy_interpretation(solution))
-
-# Verify the solution is a valid equilibrium
-is_valid = game.verify_equilibrium(solution)
-print(f"Valid equilibrium: {is_valid}")
-```
-
-### Running Examples
-
-```bash
-python examples/clairvoyance_example.py
-```
-
-This will demonstrate the Clairvoyance Game with detailed analysis including:
-- Payoff matrices for both players
-- Optimal mixed strategies  
-- Game value and strategic interpretation
-- Sensitivity analysis for different bet sizes
-
-To visualize the Monte Carlo CFR diagnostics, install `matplotlib` and run:
-
-```bash
-pip install matplotlib
-mkdir -p plots  # use 'mkdir plots' on Windows PowerShell
-python examples/clairvoyance_example.py --solver mccfr --plot --plot-file plots/mccfr_diagnostics.png
-```
-
-The `--plot` flag opens an interactive window when supported, while `--plot-file` saves the
-visualization into the `plots/` folder for headless environments and keeps generated PNGs out of
-version control.
-
-### Current Limitations
-
-The current implementation finds a valid Nash equilibrium but may converge to the trivial solution where both players always check. Work is ongoing to improve the solver to consistently find the interesting mixed-strategy equilibrium described in the book.
 
 ## Development
 
