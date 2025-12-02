@@ -5,7 +5,7 @@ poker situations where Player X acts first by checking, Player Y optionally bets
 whether to call. These games highlight how information and betting leverage interact in a
 one-decision-point structure.
 
-![Chapter 11 half-street games infographic](../../../assets/infographics/ch11_portrait_detailed.png)
+![Chapter 11 half-street games infographic](../../../assets/infographics/ch11_square_detail.png)
 
 ## Implemented examples
 
