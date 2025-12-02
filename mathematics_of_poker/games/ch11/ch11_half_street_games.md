@@ -152,7 +152,7 @@ above threshold ``b``, while Player X calls up to threshold ``c = 2a``.
 	- ``b = \frac{(2P + 1)^2}{(P + 1)(6P + 1)}``
 	- ``c = 2a``
 - **EV check**: `simulate_expected_value` Monte Carlo helper validates the closed form.
-- **MCCFR solver**: Discretises hands into buckets and recovers betting/calling regions via external-sampling MCCFR.
+- **MCCFR solver**: Discretizes hands into buckets and recovers betting/calling regions via external-sampling MCCFR.
 
 ```python
 from mathematics_of_poker.games.ch11.zero_one_game_2 import ZeroOneGame2
@@ -207,7 +207,7 @@ Key flags:
 
 The saved figure visualises Y's bet probability per bucket (plus regret per iteration) on the top axis and X's call probability on the bottom axis, mirroring the diagnostics available for Example 11.2.
 
-Because X can fold, the optimal half-street solution keeps a non-zero bluff band. The MCCFR summary above makes that explicit by averaging bet frequencies in the value, check, and bluff regions—use it to sanity check that your discretisation still carries enough bluffing pressure.
+Because X can fold, the optimal half-street solution keeps a non-zero bluff band. The MCCFR summary above makes that explicit by averaging bet frequencies in the value, check, and bluff regions—use it to sanity check that your discretization still carries enough bluffing pressure.
 
 ## Tests
 

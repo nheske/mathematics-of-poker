@@ -35,7 +35,7 @@ def test_mccfr_recovers_thresholds():
     analytic = game.analytic_solution()
 
     # Estimated thresholds should fall on the analytic bucket grid when the
-    # discretised MCCFR strategies track the threshold behaviour.
+    # discretized MCCFR strategies track the threshold behavior.
     assert result["estimated_jam_threshold"] <= analytic["jam_threshold"] + 0.15
     assert result["estimated_call_threshold"] <= analytic["call_threshold"] + 0.15
 

@@ -254,7 +254,7 @@ def main() -> None:
         )
     else:
         print(
-            "  X continues with a wider defence above the analytic call point—"
+            "  X continues with a wider defense above the analytic call point—"
             "consider more iterations or buckets if you expect a sharper cutoff."
         )
     print(f"  Avg jam prob. ≤ jam threshold:  {avg_jam_value:.3f}")
