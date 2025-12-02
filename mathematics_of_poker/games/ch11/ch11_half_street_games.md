@@ -116,10 +116,30 @@ Player Y expected value: 0.2500
 
 MONTE CARLO CHECK
 ==================
-Estimated EV for Player X: -0.2478
+Estimated EV for Player X: -0.2502
 Analytic EV:               -0.2500
-Absolute error:            0.0022
+Absolute error:            0.0002
+
+MCCFR DIAGNOSTICS
+==================
+Iterations:        120000
+Buckets:           40
+Estimated thresh.: 0.4625
+Analytic thresh.:  0.5000
+Game value (X):    -0.2470
+
+Sample bucket strategies (bet probability shown):
+	Y:bucket[0]: bet=1.000, check=0.000
+	Y:bucket[20]: bet=0.002, check=0.998
+	Y:bucket[39]: bet=0.000, check=1.000
+
+Bluffing takeaway:
+	MCCFR confirms Y's optimal play is a pure value bet region—betting dries up above the threshold, so bluffing provides no gain in this structure.
+	Avg bet prob. below threshold buckets:  0.929
+	Avg bet prob. above threshold buckets: 0.004
 ```
+
+The driver now spells out that the MCCFR strategy quickly converges to “value only” betting—average bluff frequencies above the equilibrium threshold are effectively zero, so bluffing just burns chips in this half-street format.
 
 ## [0,1] Game #2 (Example 11.3)
 
@@ -165,12 +185,18 @@ Analytic solution thresholds:
 	Bluff Threshold: 0.642857
 	Expected value for X: -0.173469
 	Expected value for Y: 0.173469
-Monte Carlo EV estimate for X (samples=50000): -0.176400
+Monte Carlo EV estimate for X (samples=50000): -0.172740
 
 Running MCCFR ...
-	Estimated game value (X): -0.098082
-	Estimated thresholds (value / bluff / call): 0.287 0.887 0.362
+	Estimated game value (X): -0.097663
+	Estimated thresholds (value / bluff / call): 0.263 0.912 0.562
 	Analytic thresholds: 0.214 / 0.643 / 0.429
+
+	Bluffing takeaway:
+		MCCFR preserves a live bluff band above the threshold; Y still fires selectively to balance X's calling region.
+		Avg bet prob. (value buckets): 0.998
+		Avg bet prob. (check buckets): 0.167
+		Avg bet prob. (bluff buckets): 0.271
 ```
 
 Key flags:
@@ -180,6 +206,8 @@ Key flags:
 - `--plot-file PATH` writes the same chart to disk—combine with `--plot` for both, or use alone on a headless machine.
 
 The saved figure visualises Y's bet probability per bucket (plus regret per iteration) on the top axis and X's call probability on the bottom axis, mirroring the diagnostics available for Example 11.2.
+
+Because X can fold, the optimal half-street solution keeps a non-zero bluff band. The MCCFR summary above makes that explicit by averaging bet frequencies in the value, check, and bluff regions—use it to sanity check that your discretisation still carries enough bluffing pressure.
 
 ## Tests
 

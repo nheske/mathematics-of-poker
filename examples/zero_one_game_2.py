@@ -78,6 +78,50 @@ def main(argv: Optional[list[str]] = None) -> int:
     )
     print(f"  Analytic thresholds: {analytic['value_threshold']:.3f} / {analytic['bluff_threshold']:.3f} / {analytic['call_threshold']:.3f}")
 
+    strategies: dict[str, dict[str, float]] = result.get("info_set_strategies", {})
+    y_buckets: list[tuple[float, float]] = []
+    for key, strategy in strategies.items():
+        if not key.startswith("Y:"):
+            continue
+        try:
+            bucket_idx = _bucket_index(key)
+        except ValueError:  # pragma: no cover - defensive guard
+            continue
+        midpoint = game._bucket_value(bucket_idx)
+        y_buckets.append((midpoint, strategy.get("bet", 0.0)))
+
+    bucket_half = 0.5 / game.num_buckets
+    value_cutoff = analytic["value_threshold"] + bucket_half
+    bluff_cutoff = analytic["bluff_threshold"] - bucket_half
+
+    value_region = [prob for midpoint, prob in y_buckets if midpoint <= value_cutoff]
+    mid_region = [prob for midpoint, prob in y_buckets if value_cutoff < midpoint < bluff_cutoff]
+    bluff_region = [prob for midpoint, prob in y_buckets if midpoint >= bluff_cutoff]
+
+    def _avg(probs: list[float]) -> float:
+        return sum(probs) / len(probs) if probs else 0.0
+
+    avg_value = _avg(value_region)
+    avg_mid = _avg(mid_region)
+    avg_bluff = _avg(bluff_region)
+    max_bluff = max(bluff_region) if bluff_region else 0.0
+
+    print("\n  Bluffing takeaway:")
+    if max_bluff <= 0.05:
+        print(
+            "    MCCFR ends up pure-valuing hands—bet frequency collapses above the bluff"
+            " threshold, so folding pressure never materialises."
+        )
+    else:
+        print(
+            "    MCCFR preserves a live bluff band above the threshold; Y still fires"
+            " selectively to balance X's calling region."
+        )
+    print(f"    Avg bet prob. (value buckets): {avg_value:.3f}")
+    if mid_region:
+        print(f"    Avg bet prob. (check buckets): {avg_mid:.3f}")
+    print(f"    Avg bet prob. (bluff buckets): {avg_bluff:.3f}")
+
     if args.plot or args.plot_file:
         maybe_plot(result, args.plot_file)
 
