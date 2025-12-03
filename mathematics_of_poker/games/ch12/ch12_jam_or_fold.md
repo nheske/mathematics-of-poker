@@ -2,6 +2,12 @@
 
 Chapter 12 of *The Mathematics of Poker* studies shallow-stacked heads-up play where the attacker and defender act in a strict jam-or-fold structure. Each player receives a single private hand strength and can only choose between shoving all-in or folding/calling. These toy games reveal how stack depth and blind structure interact with equilibrium jamming and calling thresholds.
 
+## Core Ideas
+1. Example 12.1: **Game #1 (Winner Take All)** In this static model where the best hand wins the entire pot, optimal play is relatively tight. The defender holds a significant advantage for most stack sizes (specifically when stacks >2),.
+2. Example 12.2: **Game #2 (Loser Gets Equity)** Adjusting the game so the worst hand retains 33% equity (mimicking preflop realities) forces significantly looser strategies. This shift gives the attacker the advantage up to a stack size of 6 units,.
+3. Example 12.3: **No-Limit Hold’em Jam-or-Fold** Using real poker hand equities, optimal play is surprisingly aggressive; for example, with 16-chip stacks, the button should jam nearly 62% of hands. This "jam-or-fold" approach is considered near-optimal for stack sizes under 10–12 blinds,,.
+
+
 ## Implemented examples
 
 | Example | Description | Status |

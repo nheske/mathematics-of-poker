@@ -5,6 +5,21 @@ poker situations where Player X acts first by checking, Player Y optionally bets
 whether to call. These games highlight how information and betting leverage interact in a
 one-decision-point structure.
 
+## Core Ideas
+1. **Clairvoyance Game**
+Player Y has perfect information and bets all winning hands plus a fraction **α** of losing hands.  
+Player X calls at frequency **1 − α**, making Y indifferent to bluffing.
+
+2. **Game #1 — No Folding**
+X must always call, so Y maximizes EV by betting only the **top 50%** of hands.  
+No bluffs are required.
+
+3. **Game #2 — Folding Allowed**
+X's ability to fold forces Y to adopt a polarized strategy: betting the best hands for value and the worst hands as bluffs. Y balances these ranges using the ratio α to make X indifferent between calling and folding
+
+
+
+
 ![Chapter 11 half-street games infographic](../../../assets/infographics/ch11_square_detail.png)
 
 ## Implemented examples
@@ -15,11 +30,6 @@ one-decision-point structure.
 | 11.2 | [0,1] Game #1 (no-fold half street) | ✅ Implemented |
 | 11.3 | [0,1] Game #2 (fold allowed) | ✅ Implemented |
 
-Planned additions for this chapter include further threshold-based half-street variants.
-
-> **Tip:** Generated plots from the example scripts are routed to a `plots/` directory in these
-> snippets. The repository ignores that folder by default, keeping diagnostic PNG files out of
-> version control. Create it once (`mkdir plots`) and point `--plot-file` there for all runs.
 
 ## Clairvoyance Game (Example 11.1)
 
