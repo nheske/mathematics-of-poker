@@ -1,5 +1,5 @@
-# Chapter 10 – Facing The Nemesis (Placeholder)
+# Chapter 13 – (Placeholder)
 
-This document is a placeholder for the Chapter 10
+This document is a placeholder for the Chapter 13
 
-![Chapter 10 Facing The Nemesis infographic](../../../assets/infographics/ch10_square_detail.png)
+![Chapter 10 Facing The Nemesis infographic](../../../assets/infographics/ch13_square_detail.png)

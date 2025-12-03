@@ -1,5 +1,5 @@
-# Chapter 13 – AKQ Game (Placeholder)
+# Chapter 10 –Facing The Nemesis (Placeholder)
 
-This document is a placeholder for the Chapter 13 AKQ game notes. Detailed analysis, solver implementations, and diagnostics will be added in a future iteration.
+This document is a placeholder for the Chapter 10 
 
-![Chapter 13 The AKQ Game infographic](../../../assets/infographics/ch13_square_detail.png)
+![Chapter 10 Facing The Nemesis infographic](../../../assets/infographics/ch10_square_detail.png)

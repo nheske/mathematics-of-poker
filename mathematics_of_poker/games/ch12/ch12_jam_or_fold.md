@@ -7,6 +7,8 @@ Chapter 12 of *The Mathematics of Poker* studies shallow-stacked heads-up play w
 2. Example 12.2: **Game #2 (Loser Gets Equity)** Adjusting the game so the worst hand retains 33% equity (mimicking preflop realities) forces significantly looser strategies. This shift gives the attacker the advantage up to a stack size of 6 units,.
 3. Example 12.3: **No-Limit Hold’em Jam-or-Fold** Using real poker hand equities, optimal play is surprisingly aggressive; for example, with 16-chip stacks, the button should jam nearly 62% of hands. This "jam-or-fold" approach is considered near-optimal for stack sizes under 10–12 blinds,,.
 
+![Chapter 12 jam-or-fold infographic](../../../assets/infographics/ch12_square_detail.png)
+
 
 ## Implemented examples
 

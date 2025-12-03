@@ -21,26 +21,34 @@ A self-play algorithm that finds near-optimal strategies by repeatedly playing t
 **Monte Carlo CFR (MCCFR)**
 Samples only a few random trajectories each iteration, letting it scale to huge games like poker.
 
-### 10. Facing The Nemesis: Game Theory
-Introduction to game theory concepts and how they apply to poker.
+### 10. [Facing The Nemesis: Game Theory](mathematics_of_poker/games/ch10/ch10_facing_the_nemesis.md)
+Introduction to game theory concepts and how they apply to poker. Matrix game solver using linear programming (SciPy) for Nash equilibria.
 * Example 10.1 - Odds and Evens 
-* 
+* Example 10.2 - Roshambo 
+* Example 10.3 - Roshambo - S 
+* Example 10.4 - Roshambo - F 
+* Example 10.5 - Cops and Robbers 
 ### 11. [One Side of the Street: Half-Street Games](mathematics_of_poker/games/ch11/ch11_half_street_games.md)
+Analysis of simplified poker games with a single betting round.
 * Example 11.1 - The Clairvoyance Game
 * Example 11.2 - [0, 1] Game #1 
 * Example 11.3 - [0, 1] Game #2 
 ### 12. [Headsup With High Blinds: The Jam-or-Fold Game](mathematics_of_poker/games/ch12/ch12_jam_or_fold.md)
+Push-or-fold analyzer for short-stack scenarios.
 * Example 12.1 - [0, 1] Jam-or-Fold Game #1
 * Example 12.2 - [0, 1] Jam-or-Fold Game #2
 * Example 12.3 - Jam-or-Fold No-limit Holdem
 ### 13. [Poker Made Simple: The AKQ Game](mathematics_of_poker/games/ch13/ch13_akq_game.md)
+A simplified three-card poker game for understanding optimal strategies.
 * Example 13.1 - AKO Game #1 
 * Example 13.2 - AKQ Game #2
 ### 14. You Don't Have To Guess: No-Limit Bet Sizing
+Optimal bet sizing strategies in no-limit games.
 * Example 14.1 - The Half-Street No-Limit Clairvoyance Game
 * Example 14.2 - AKQ Game #3 
 * Example 14.3 - [0, 1] Game #3
 ### 15. Player X Strikes Back: Full-Street Games
+Analysis of multi-street poker games with complete betting rounds.
 * Example 15.1 - AKQ Game #4
 * Example 15.2 - AKO Game #5
 ### 16. Small Bets, Big Pots: No-Fold [0,1] Games
@@ -50,6 +58,13 @@ Game-theoretic analysis of games where folding is not optimal.
 * Example 16.3 - [0, 1] Game #6 – The Raising Game 
 * Example 16.4 - [0, 1] Game #7
 * Example 16.5 - [0,1] Game #8: The Raising Game with Check-Raise
+### 17. Mixing in Bluffs: Finite Pot [O, 1] Games 
+* Example 17.1 - [0,1] Game #9
+* Example 17.2 - [0,1] Game #10 
+* Example 17.3 - [O,1] Game #11 
+
+
+
 
 ### Currently Implemented
 
