@@ -73,22 +73,22 @@ Samples only a few random trajectories each iteration, letting it scale to huge 
 **And more chapters to follow...**
 
 
-## Where This Project Is Going
+## Future Direction
 
-Right now, I’m working through **Chapters 10–21 of _The Mathematics of Poker_** and implementing the core optimal-play models in Python. Once that foundation is in place, I’ll start expanding into additional formats and side games, including:
+Right now, I’m working through **Chapters 10–21 of _The Mathematics of Poker_** and implementing the core optimal-play models in Python. Once that foundation is in place, I’ll start expanding including:
 
-- **Nit games**
-- **7–2 games**
-- **Kitty games**
+- **Nit game**
+- **7–2 game**
+- **Kitty game**
 - Other **poker “carnival” variants** and custom incentive structures
+- Pot Limit Omaha specific simulations such as calling 4-bets vs. presumed aces
 
-The bigger goal is to grow this into a **community-driven toolbox for experimenting with poker strategy**.
 
 If you’re into:
-
 - Poker math and game theory  
 - Python implementations of toy games and solvers  
-- CFR / Monte Carlo CFR and related algorithms  
+- CFR / Monte Carlo CFR and related algorithms 
+- Pot Limit Omaha (PLO) specifics 
 
 …I’d love to find collaborators.
 
