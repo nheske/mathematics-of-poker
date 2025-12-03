@@ -21,31 +21,35 @@ A self-play algorithm that finds near-optimal strategies by repeatedly playing t
 **Monte Carlo CFR (MCCFR)**
 Samples only a few random trajectories each iteration, letting it scale to huge games like poker.
 
-10. Facing The Nemesis: Game Theory
-11. [One Side of the Street: Half-Street Games](mathematics_of_poker/games/ch11/ch11_half_street_games.md)
-    * Example 11.1 - The Clairvoyance Game
-    * Example 11.2 - [0, 1] Game #1 
-    * Example 11.3 - [0, 1] Game #2 
-12. [Headsup With High Blinds: The Jam-or-Fold Game](mathematics_of_poker/games/ch12/ch12_jam_or_fold.md)
-    * Example 12.1 - [0, 1] Jam-or-Fold Game #1
-    * Example 12.2 - [0, 1] Jam-or-Fold Game #2
-    * Example 12.3 - Jam-or-Fold No-limit Holdem
-13. [Poker Made Simple: The AKQ Game](mathematics_of_poker/games/ch13/ch13_akq_game.md)
-    * Example 13.1 - AKO Game #1 
-    * Example 13.2 - AKQ Game #2
-14. You Don't Have To Guess: No-Limit Bet Sizing
-    * Example 14.1 - The Half-Street No-Limit Clairvoyance Game
-    * Example 14.2 - AKQ Game #3 
-    * Example 14.3 - [0, 1] Game #3
-15. Player X Strikes Back: Full-Street Games
-    * Example 15.1 - AKQ Game #4
-    * Example 15.2 - AKO Game #5
-16. Small Bets, Big Pots: No-Fold [0,1] Games
-    * Example 16.1 - [0, 1] Game #4 
-    * Example 16.2 - [0, 1] Game #5
-    * Example 16.3 - [0, 1] Game #6 – The Raising Game 
-    * Example 16.4 - [0, 1] Game #7
-    * Example 16.5 - [0,1] Game #8: The Raising Game with Check-Raise
+### 10. Facing The Nemesis: Game Theory
+Introduction to game theory concepts and how they apply to poker.
+* Example 10.1 - Odds and Evens 
+* 
+### 11. [One Side of the Street: Half-Street Games](mathematics_of_poker/games/ch11/ch11_half_street_games.md)
+* Example 11.1 - The Clairvoyance Game
+* Example 11.2 - [0, 1] Game #1 
+* Example 11.3 - [0, 1] Game #2 
+### 12. [Headsup With High Blinds: The Jam-or-Fold Game](mathematics_of_poker/games/ch12/ch12_jam_or_fold.md)
+* Example 12.1 - [0, 1] Jam-or-Fold Game #1
+* Example 12.2 - [0, 1] Jam-or-Fold Game #2
+* Example 12.3 - Jam-or-Fold No-limit Holdem
+### 13. [Poker Made Simple: The AKQ Game](mathematics_of_poker/games/ch13/ch13_akq_game.md)
+* Example 13.1 - AKO Game #1 
+* Example 13.2 - AKQ Game #2
+### 14. You Don't Have To Guess: No-Limit Bet Sizing
+* Example 14.1 - The Half-Street No-Limit Clairvoyance Game
+* Example 14.2 - AKQ Game #3 
+* Example 14.3 - [0, 1] Game #3
+### 15. Player X Strikes Back: Full-Street Games
+* Example 15.1 - AKQ Game #4
+* Example 15.2 - AKO Game #5
+### 16. Small Bets, Big Pots: No-Fold [0,1] Games
+Game-theoretic analysis of games where folding is not optimal.
+* Example 16.1 - [0, 1] Game #4 
+* Example 16.2 - [0, 1] Game #5
+* Example 16.3 - [0, 1] Game #6 – The Raising Game 
+* Example 16.4 - [0, 1] Game #7
+* Example 16.5 - [0,1] Game #8: The Raising Game with Check-Raise
 
 ### Currently Implemented
 
@@ -77,17 +81,17 @@ Samples only a few random trajectories each iteration, letting it scale to huge 
 
 Right now, I’m working through **Chapters 10–21 of _The Mathematics of Poker_** and implementing the core optimal-play models in Python. Once that foundation is in place, I’ll start expanding including:
 
-- **Nit game**
-- **7–2 game**
-- **Kitty game**
-- Other **poker “carnival” variants** and custom incentive structures
-- Pot Limit Omaha specific simulations such as calling 4-bets vs. presumed aces
+* **Nit game**
+* **7–2 bounty game**
+* **Kitty game**
+* perhaps other **carnival variants** with strange incentive structures
+* Pot Limit Omaha specific simulations
+    * calling 4-bets vs. presumed aces preflop then jam-or-fold flop.
 
-The goal is to create a poker learning resource that leverages 
-If you’re into learning:
+If you’re into:
 - Poker math and game theory  
 - Python implementations of toy games and solvers  
-- CFR and solver related algorithms 
+- CFR/solver related algorithms 
 - Pot Limit Omaha (PLO) specifics 
 
 …I’d love to find collaborators.
