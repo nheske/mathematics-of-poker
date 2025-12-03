@@ -6,7 +6,7 @@ Python implementation of the toy games from [**The Mathematics of Poker**](https
 
 This project implements various game-theoretic models and toy games discussed in "The Mathematics of Poker", and provides practical Python implementations for educational and research purposes.
 
-I have incorporated Counterfactual Regret Minimization algorithms as an alternative means of solving the various toy games from the book. 
+I have incorporated the solver method of Counterfactual Regret Minimization algorithms as an alternative means of determining optimal play for the various toy games from the book. 
 
 **Counterfactual Regret Minimization (CFR)**
 A self-play algorithm that finds near-optimal strategies by repeatedly playing the game against itself.
@@ -83,11 +83,11 @@ Right now, I’m working through **Chapters 10–21 of _The Mathematics of Poker
 - Other **poker “carnival” variants** and custom incentive structures
 - Pot Limit Omaha specific simulations such as calling 4-bets vs. presumed aces
 
-
-If you’re into:
+The goal is to create a poker learning resource that leverages 
+If you’re into learning:
 - Poker math and game theory  
 - Python implementations of toy games and solvers  
-- CFR / Monte Carlo CFR and related algorithms 
+- CFR and solver related algorithms 
 - Pot Limit Omaha (PLO) specifics 
 
 …I’d love to find collaborators.
