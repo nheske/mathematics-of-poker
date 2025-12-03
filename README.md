@@ -1,12 +1,25 @@
 # Mathematics of Poker
 
-Python implementation of the toy games from [The Mathematics of Poker](https://www.amazon.com/Mathematics-Poker-Bill-Chen/dp/1886070253) by Bill Chen and Jerrod Ankenman.
+Python implementation of the toy games from [**The Mathematics of Poker**](https://www.amazon.com/Mathematics-Poker-Bill-Chen/dp/1886070253) by Bill Chen and Jerrod Ankenman.
 
 ## Overview
 
-This project implements various game-theoretic models and toy games discussed in "The Mathematics of Poker", providing practical Python implementations for educational and research purposes.
+This project implements various game-theoretic models and toy games discussed in "The Mathematics of Poker", and provides practical Python implementations for educational and research purposes.
 
+I have incorporated Counterfactual Regret Minimization algorithms as an alternative means of solving the various toy games from the book. 
 
+**Counterfactual Regret Minimization (CFR)**
+A self-play algorithm that finds near-optimal strategies by repeatedly playing the game against itself.
+* Starts with a random strategy
+* After each iteration, asks:
+“How much better would I have done if I always chose this action?”
+* This difference = regret
+* Positive regret accumulates → good actions gain weight
+* Strategy updates by choosing actions proportional to positive regret
+* Repeating this thousands/millions of times → converges to a Nash equilibrium
+
+**Monte Carlo CFR (MCCFR)**
+Samples only a few random trajectories each iteration, letting it scale to huge games like poker.
 
 10. Facing The Nemesis: Game Theory
 11. [One Side of the Street: Half-Street Games](mathematics_of_poker/games/ch11/ch11_half_street_games.md)
@@ -60,7 +73,26 @@ This project implements various game-theoretic models and toy games discussed in
 **And more chapters to follow...**
 
 
+## Where This Project Is Going
 
+Right now, I’m working through **Chapters 10–21 of _The Mathematics of Poker_** and implementing the core optimal-play models in Python. Once that foundation is in place, I’ll start expanding into additional formats and side games, including:
+
+- **Nit games**
+- **7–2 games**
+- **Kitty games**
+- Other **poker “carnival” variants** and custom incentive structures
+
+The bigger goal is to grow this into a **community-driven toolbox for experimenting with poker strategy**.
+
+If you’re into:
+
+- Poker math and game theory  
+- Python implementations of toy games and solvers  
+- CFR / Monte Carlo CFR and related algorithms  
+
+…I’d love to find collaborators.
+
+**PRs, issues, and discussions are very welcome.** If you’d like to get involved, feel free to open an issue to introduce yourself or suggest a direction.
 
 
 
@@ -137,6 +169,7 @@ ruff check mathematics_of_poker tests
 ## Contributing
 
 Contributions are welcome! Please feel free to submit a Pull Request.
+
 
 ## License
 
