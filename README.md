@@ -68,26 +68,31 @@ Game-theoretic analysis of games where folding is not optimal.
 
 ### Currently Implemented
 
-**Chapter 11: Half-Street Games**
-- **Example 11.1 - The Clairvoyance Game**: A simplified poker game where one player has perfect information. Demonstrates Nash equilibrium computation for mixed strategies in zero-sum games.
-- **Example 11.2 - [0,1] Game #1**: No-fold half-street game with continuous hand strengths; highlights threshold betting and MCCFR discretisation.
-- **Example 11.3 - [0,1] Game #2**: Folding allowed for Player X; analytic thresholds vary with pot size and MCCFR recovers the optimal calling range.
+#### Chapter 11: Half-Street Games
 
-**Chapter 12: Headsup With High Blinds – The Jam-or-Fold Game** ([details](mathematics_of_poker/games/ch12/ch12_jam_or_fold.md))
-- **Example 12.1 - [0,1] Jam-or-Fold Game #1**: Players jam or fold from the blinds with equal stacks; includes analytic jam/call thresholds, Monte Carlo validation, and MCCFR diagnostics with visualisations.
+* **Example 11.1 - The Clairvoyance Game**: A simplified poker game where one player has perfect information. Demonstrates Nash equilibrium computation for mixed strategies in zero-sum games.
+* **Example 11.2 - [0,1] Game #1**: No-fold half-street game with continuous hand strengths; highlights threshold betting and MCCFR discretisation.
+* **Example 11.3 - [0,1] Game #2**: Folding allowed for Player X; analytic thresholds vary with pot size and MCCFR recovers the optimal calling range.
+
+#### Chapter 12: Headsup With High Blinds – The Jam-or-Fold Game ([details](mathematics_of_poker/games/ch12/ch12_jam_or_fold.md))
+
+* **Example 12.1 - [0,1] Jam-or-Fold Game #1**: Players jam or fold from the blinds with equal stacks; includes analytic jam/call thresholds, Monte Carlo validation, and MCCFR diagnostics with visualisations.
+* **Example 12.2 - [0,1] Jam-or-Fold Game #2**: Extends Game #1 by awarding the dominated hand one-third of the pot at showdown, resulting in looser jam/call thresholds, Monte Carlo validation, and MCCFR diagnostics.
 
 ### Planned Implementations
 
-**Chapter 11: One Side of the Street: Half-Street Games**
-- Example 11.4+ – Additional threshold and mixed-strategy variants
+#### Chapter 11: One Side of the Street: Half-Street Games
 
-**Chapter 12: Headsup With High Blinds: The Jam-or-Fold Game** ([details](mathematics_of_poker/games/ch12/ch12_jam_or_fold.md))
-- Example 12.1 - [0, 1] Jam-or-Fold Game #1
-- Example 12.2 - [0, 1] Jam-or-Fold Game #2
-- Example 12.3 - Jam-or-Fold No-limit Holdem
+* Example 11.4+ – Additional threshold and mixed-strategy variants
 
-**Chapter 13: AKQ Game** ([placeholder](mathematics_of_poker/games/ch13/ch13_akq_game.md))
-- Example 13.1 - AKQ Game baseline (coming soon)
+#### Chapter 12: Headsup With High Blinds: The Jam-or-Fold Game ([details](mathematics_of_poker/games/ch12/ch12_jam_or_fold.md))
+
+* Example 12.1 - [0, 1] Jam-or-Fold Game #1
+* Example 12.3 - Jam-or-Fold No-limit Holdem
+
+#### Chapter 13: AKQ Game ([placeholder](mathematics_of_poker/games/ch13/ch13_akq_game.md))
+
+* Example 13.1 - AKQ Game baseline (coming soon)
 
 **And more chapters to follow...**
 
@@ -104,10 +109,11 @@ Right now, I’m working through **Chapters 10–21 of _The Mathematics of Poker
     * calling 4-bets vs. presumed aces preflop then jam-or-fold flop.
 
 If you’re into:
-- Poker math and game theory  
-- Python implementations of toy games and solvers  
-- CFR/solver related algorithms 
-- Pot Limit Omaha (PLO) specifics 
+
+* Poker math and game theory
+* Python implementations of toy games and solvers
+* CFR/solver related algorithms
+* Pot Limit Omaha (PLO) specifics
 
 …I’d love to find collaborators.
 
@@ -117,7 +123,7 @@ If you’re into:
 
 ## Project Structure
 
-```
+```text
 mathematics-of-poker/
 ├── mathematics_of_poker/     # Main package directory
 │   ├── __init__.py          # Package initialization
@@ -159,10 +165,10 @@ pip install -r requirements-dev.txt
 
 ## Requirements
 
-- Python 3.7+
-- NumPy (for numerical computations)
-- SciPy (for optimization algorithms)
-- Matplotlib (for visualizations)
+* Python 3.7+
+* NumPy (for numerical computations)
+* SciPy (for optimization algorithms)
+* Matplotlib (for visualizations)
 
 
 ## Development
@@ -196,4 +202,4 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## References
 
-- Chen, B., & Ankenman, J. (2006). *The Mathematics of Poker*. ConJelCo LLC.
+* Chen, B., & Ankenman, J. (2006). _The Mathematics of Poker_. ConJelCo LLC.

@@ -15,7 +15,9 @@ from .ch11 import (
 )
 from .ch12 import (
     JamOrFoldGame1,
+    JamOrFoldGame2,
     simulate_expected_value_jam_or_fold_game1,
+    simulate_expected_value_game2,
 )
 
 __all__ = [
@@ -26,5 +28,7 @@ __all__ = [
     'simulate_expected_value_game1',
     'simulate_expected_value_game2',
     'JamOrFoldGame1',
+    'JamOrFoldGame2',
     'simulate_expected_value_jam_or_fold_game1',
+    'simulate_expected_value_game2',
 ]
