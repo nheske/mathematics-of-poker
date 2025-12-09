@@ -24,12 +24,8 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--stack",
         type=float,
-        action="append",
-        default=None,
-        help=(
-            "Effective stack size S in units. Specify multiple --stack options to run several "
-            "regimes (default: run S=4 and S=2)."
-        ),
+        default=4.0,
+        help="Effective stack size S in units (default: 4.0)",
     )
     parser.add_argument(
         "--buckets",
@@ -266,40 +262,27 @@ def maybe_plot(game: JamOrFoldGame2, mccfr_pack: dict, output_path: Optional[str
 def main() -> None:
     args = parse_args()
 
-    stack_sizes = args.stack if args.stack is not None else [4.0, 2.0]
+    stack_size = args.stack
 
     print("[0,1] JAM-OR-FOLD GAME #2")
     print("==========================")
-    print(
-        "Stack runs:        "
-        + ", ".join(f"S={stack:g}" for stack in stack_sizes)
-    )
+    print(f"Stack size (S):   {stack_size:g}")
     print(f"Buckets:          {args.buckets}")
     print(f"Iterations:       {args.iterations}")
     print()
 
-    for idx, stack in enumerate(stack_sizes, start=1):
-        game = JamOrFoldGame2(stack_size=stack, num_buckets=args.buckets)
+    game = JamOrFoldGame2(stack_size=stack_size, num_buckets=args.buckets)
 
-        if len(stack_sizes) > 1:
-            print(f"--- RUN {idx}/{len(stack_sizes)} (S={stack}) ---")
+    print(f"Stack size (S): {game.stack_size}")
+    print(f"Big blind:      {game.big_blind}")
+    print(f"Small blind:    {game.small_blind}")
+    print()
 
-        print(f"Stack size (S): {game.stack_size}")
-        print(f"Big blind:      {game.big_blind}")
-        print(f"Small blind:    {game.small_blind}")
-        print()
+    print_analytic_summary(game)
+    run_monte_carlo(game, samples=args.samples, seed=args.seed)
+    mccfr_pack = run_mccfr(game, iterations=args.iterations, seed=args.seed)
 
-        print_analytic_summary(game)
-        run_monte_carlo(game, samples=args.samples, seed=args.seed)
-        mccfr_pack = run_mccfr(game, iterations=args.iterations, seed=args.seed)
-
-        plot_path = args.plot_file
-        if plot_path and len(stack_sizes) > 1:
-            root, ext = os.path.splitext(plot_path)
-            suffix = f"_S{stack:g}".replace(".", "-")
-            plot_path = f"{root}{suffix}{ext or ''}"
-
-        maybe_plot(game, mccfr_pack, plot_path, args.plot)
+    maybe_plot(game, mccfr_pack, args.plot_file, args.plot)
 
     print("Done.")
 
