@@ -26,10 +26,10 @@ Samples only a few random trajectories each iteration, letting it scale to huge 
 Introduction to game theory concepts and how they apply to poker.
 
 * Example 10.1 - Odds and Evens (`python examples/odds_and_evens.py`)
-* Example 10.2 - Roshambo
-* Example 10.3 - Roshambo - S
-* Example 10.4 - Roshambo - F
-* Example 10.5 - Cops and Robbers
+* Example 10.2 - Roshambo (`python examples/roshambo.py`)
+* Example 10.3 - Roshambo - S (`python examples/roshambo_s.py`)
+* Example 10.4 - Roshambo - F (`python examples/roshambo_f.py`)
+* Example 10.5 - Cops and Robbers (`python examples/cops_and_robbers.py`)
 
 ### 11. [One Side of the Street: Half-Street Games](mathematics_of_poker/games/ch11/ch11_half_street_games.md)
 
@@ -93,6 +93,10 @@ Game-theoretic analysis of games where folding is not optimal.
 #### Chapter 10: Facing the Nemesis – Matrix Games ([details](mathematics_of_poker/games/ch10/ch10_facing_the_nemesis.md))
 
 * **Example 10.1 - Odds and Evens**: Minimal simultaneous-move matrix game solved both analytically and with MCCFR; includes a runnable CLI (`python examples/odds_and_evens.py`) and documentation walkthrough.
+* **Example 10.2 - Roshambo**: Classic rock-paper-scissors matrix game showcasing a uniform mixed equilibrium; MCCFR converges to the 1/3 mix using the shared infrastructure (`python examples/roshambo.py`).
+* **Example 10.3 - Roshambo - S**: Adds a bonus for winning with scissors; analytic helper and MCCFR agree on the 50%/25%/25% mix (`python examples/roshambo_s.py`).
+* **Example 10.4 - Roshambo - F**: Introduces a dominated "flower" action; solver and analytics ignore it, recovering the classic 1/3 mix (`python examples/roshambo_f.py`).
+* **Example 10.5 - Cops and Robbers**: Two-action patrol-vs-rob matrix game with configurable payoffs; analytic solution and MCCFR both yield the one-third patrol/rob mix under unit parameters (`python examples/cops_and_robbers.py`).
 
 #### Chapter 11: Half-Street Games
 

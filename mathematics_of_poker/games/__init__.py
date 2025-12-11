@@ -5,7 +5,13 @@ This module contains implementations of various simplified poker games
 including half-street games and their optimal solutions.
 """
 
-from .ch10 import OddsAndEvensGame
+from .ch10 import (
+    OddsAndEvensGame,
+    RoshamboGame,
+    RoshamboSGame,
+    RoshamboFGame,
+    CopsAndRobbersGame,
+)
 from .ch11.half_street import HalfStreetGame
 from .ch11 import (
     ClairvoyanceGame,
@@ -23,6 +29,10 @@ from .ch12 import (
 
 __all__ = [
     'OddsAndEvensGame',
+    'RoshamboGame',
+    'RoshamboSGame',
+    'RoshamboFGame',
+    'CopsAndRobbersGame',
     'HalfStreetGame',
     'ClairvoyanceGame',
     'ZeroOneGame1',
