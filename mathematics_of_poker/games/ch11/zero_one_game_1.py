@@ -113,7 +113,10 @@ class ZeroOneGame1(ZeroOneBucketGame):
         return self._tree_cache
 
     def solve_mccfr_equilibrium(
-        self, iterations: int = 200_000, seed: Optional[int] = None
+        self,
+        iterations: int = 200_000,
+        seed: Optional[int] = None,
+        use_cfr_plus: bool = True,
     ) -> Dict[str, object]:
         """Run MCCFR on the discretised game tree and return diagnostics."""
 
@@ -121,8 +124,8 @@ class ZeroOneGame1(ZeroOneBucketGame):
             raise ValueError("iterations must be positive")
 
         tree = self.build_game_tree()
-        solver = MonteCarloCFR(tree)
-        result = solver.run(iterations=iterations, seed=seed)
+        solver = MonteCarloCFR(tree, use_cfr_plus=use_cfr_plus)
+        result = solver.run(iterations=iterations, seed=seed, use_cfr_plus=use_cfr_plus)
 
         info_strategies: Dict[str, Dict[str, float]] = {}
         info_regrets: Dict[str, Dict[str, float]] = {}
@@ -143,6 +146,9 @@ class ZeroOneGame1(ZeroOneBucketGame):
             "estimated_threshold": estimated_threshold,
             "optimal_threshold": self.optimal_threshold(),
             "iterations": iterations,
+            "use_cfr_plus": use_cfr_plus,
+            "average_delay": result.average_delay,
+            "average_weighting": result.average_weighting,
             "num_buckets": self.num_buckets,
         }
 

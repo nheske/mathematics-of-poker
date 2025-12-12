@@ -147,13 +147,16 @@ class ClairvoyanceGame(HalfStreetGame):
         return solution
 
     def solve_mccfr_equilibrium(
-        self, iterations: int = 50000, seed: Optional[int] = None
+        self,
+        iterations: int = 50000,
+        seed: Optional[int] = None,
+        use_cfr_plus: bool = True,
     ) -> Dict:
         """Approximate the equilibrium using external-sampling MCCFR."""
 
         tree = self.build_game_tree()
-        solver = MonteCarloCFR(tree)
-        result = solver.run(iterations=iterations, seed=seed)
+        solver = MonteCarloCFR(tree, use_cfr_plus=use_cfr_plus)
+        result = solver.run(iterations=iterations, seed=seed, use_cfr_plus=use_cfr_plus)
 
         y_nuts_avg = result.average_strategy_dict("Y:nuts")
         y_bluff_avg = result.average_strategy_dict("Y:bluff")
@@ -182,6 +185,9 @@ class ClairvoyanceGame(HalfStreetGame):
             "bluff_fraction": bluff_bet,
             "value_bet_fraction": value_bet,
             "iterations": iterations,
+            "use_cfr_plus": use_cfr_plus,
+            "average_delay": result.average_delay,
+            "average_weighting": result.average_weighting,
             "info_set_strategies": {
                 "Y:nuts": y_nuts_avg,
                 "Y:bluff": y_bluff_avg,

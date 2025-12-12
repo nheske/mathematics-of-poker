@@ -66,14 +66,17 @@ class OddsAndEvensGame:
         return self._tree_cache
 
     def solve_mccfr_equilibrium(
-        self, iterations: int = 5_000, seed: Optional[int] = None
+        self,
+        iterations: int = 5_000,
+        seed: Optional[int] = None,
+        use_cfr_plus: bool = True,
     ) -> Dict[str, object]:
         if iterations <= 0:
             raise ValueError("iterations must be positive")
 
         tree = self.build_game_tree()
-        solver = MonteCarloCFR(tree)
-        result = solver.run(iterations=iterations, seed=seed)
+        solver = MonteCarloCFR(tree, use_cfr_plus=use_cfr_plus)
+        result = solver.run(iterations=iterations, seed=seed, use_cfr_plus=use_cfr_plus)
 
         info_strategies: Dict[str, Dict[str, float]] = {}
         info_regrets: Dict[str, Dict[str, float]] = {}
@@ -87,6 +90,9 @@ class OddsAndEvensGame:
             "info_set_strategies": info_strategies,
             "info_set_regrets": info_regrets,
             "iterations": iterations,
+            "use_cfr_plus": use_cfr_plus,
+            "average_delay": result.average_delay,
+            "average_weighting": result.average_weighting,
         }
 
     def _payoff_for_actions(self, y_action: str, x_action: str) -> float:

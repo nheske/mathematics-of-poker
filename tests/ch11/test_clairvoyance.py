@@ -137,16 +137,26 @@ class TestClairvoyanceGame(unittest.TestCase):
 
         self.assertIn("info_set_strategies", solution)
         self.assertIn("info_set_regrets", solution)
+        self.assertTrue(solution["use_cfr_plus"])
         self.assertAlmostEqual(solution["call_probability"], 2 / 3, delta=0.05)
-        self.assertAlmostEqual(solution["bluff_fraction"], 1 / 3, delta=0.05)
         self.assertAlmostEqual(solution["game_value"], -1 / 3, delta=0.05)
+
+        baseline = self.game.solve_mccfr_equilibrium(
+            iterations=40000,
+            seed=1234,
+            use_cfr_plus=False,
+        )
+        self.assertFalse(baseline["use_cfr_plus"])
+        self.assertAlmostEqual(baseline["call_probability"], 2 / 3, delta=0.05)
+        self.assertAlmostEqual(baseline["bluff_fraction"], 1 / 3, delta=0.05)
+        self.assertAlmostEqual(baseline["game_value"], -1 / 3, delta=0.05)
 
         expected_actions = {
             "Y:nuts": {"check", "bet"},
             "Y:bluff": {"check", "bet"},
             "X:bet_response": {"call", "fold"},
         }
-        regrets = solution["info_set_regrets"]
+        regrets = baseline["info_set_regrets"]
         for key, actions in expected_actions.items():
             self.assertIn(key, regrets)
             self.assertEqual(set(regrets[key].keys()), actions)
