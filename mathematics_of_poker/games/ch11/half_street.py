@@ -51,19 +51,28 @@ class HalfStreetGame(ABC):
         """Return the analytic Nash equilibrium for the concrete game."""
         raise NotImplementedError
 
-    def solve_cfr_equilibrium(self, iterations: int = 10000, seed: Optional[int] = None) -> Dict:
+    def solve_cfr_equilibrium(
+        self,
+        iterations: int = 10000,
+        seed: Optional[int] = None,
+        use_cfr_plus: bool = False,
+    ) -> Dict:
         """Approximate the Nash equilibrium using regret-matching CFR.
 
         Args:
             iterations: Number of regret-matching iterations to run.
             seed: Optional random seed for reproducibility when tie-breaking is required.
+            use_cfr_plus: If True, clamp cumulative regrets at zero (CFR+ variant).
 
         Returns:
             Dictionary containing approximate strategies and game value.
         """
         payoff_x, payoff_y = self.get_payoff_matrix()
         optimal_x, optimal_y, game_value = self._solve_regret_matching(
-            payoff_y.T, iterations=iterations, seed=seed
+            payoff_y.T,
+            iterations=iterations,
+            seed=seed,
+            use_cfr_plus=use_cfr_plus,
         )
 
         return {
@@ -80,6 +89,7 @@ class HalfStreetGame(ABC):
         payoff_matrix: np.ndarray,
         iterations: int = 10000,
         seed: Optional[int] = None,
+        use_cfr_plus: bool = False,
     ) -> Tuple[np.ndarray, np.ndarray, float]:
         """Solve a zero-sum game using regret-matching (CFR for normal-form games).
 
@@ -87,6 +97,7 @@ class HalfStreetGame(ABC):
             payoff_matrix: Payoff matrix for the row player (Y).
             iterations: Number of regret updates to perform.
             seed: Optional random seed to stabilise tie-breaking.
+            use_cfr_plus: When True, cumulative regrets are clamped at zero after each update.
 
         Returns:
             Tuple of (column_strategy, row_strategy, game_value).
@@ -119,6 +130,10 @@ class HalfStreetGame(ABC):
 
             regrets_row += row_payoffs - utility_row
             regrets_col += col_payoffs - utility_col
+
+            if use_cfr_plus:
+                np.maximum(regrets_row, 0.0, out=regrets_row)
+                np.maximum(regrets_col, 0.0, out=regrets_col)
 
             strategy_row = self._regrets_to_strategy(regrets_row, rng)
             strategy_col = self._regrets_to_strategy(regrets_col, rng)

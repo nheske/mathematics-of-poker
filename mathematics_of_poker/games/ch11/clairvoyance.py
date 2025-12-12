@@ -121,10 +121,19 @@ class ClairvoyanceGame(HalfStreetGame):
             "call_probability": call_probability,
         }
 
-    def solve_cfr_equilibrium(self, iterations: int = 10000, seed: Optional[int] = None) -> Dict:
+    def solve_cfr_equilibrium(
+        self,
+        iterations: int = 10000,
+        seed: Optional[int] = None,
+        use_cfr_plus: bool = False,
+    ) -> Dict:
         """Approximate the equilibrium using regret-matching CFR."""
 
-        solution = super().solve_cfr_equilibrium(iterations=iterations, seed=seed)
+        solution = super().solve_cfr_equilibrium(
+            iterations=iterations,
+            seed=seed,
+            use_cfr_plus=use_cfr_plus,
+        )
         x_strategy = solution["x_strategy"]
         y_strategy = solution["y_strategy"]
 
