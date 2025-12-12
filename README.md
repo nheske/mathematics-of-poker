@@ -232,3 +232,4 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ## References
 
 * Chen, B., & Ankenman, J. (2006). _The Mathematics of Poker_. ConJelCo LLC.
+* Lee, H. R. (2020). [PokerHandEvaluator](https://github.com/HenryRLee/PokerHandEvaluator) – source of the precomputed lookup tables that power our Python hand-evaluation routines.

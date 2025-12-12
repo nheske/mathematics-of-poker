@@ -319,3 +319,41 @@ class ToyPokerCFR:
             call_prob = avg_strategy[0]  # index 0 = "c" = call
             odf += self.q_dist[j] * call_prob
         return odf
+
+
+def _demo():
+    """Simple command-line entry point for quick experiments."""
+
+    n_cards = 10
+    uniform_p = [1.0 / n_cards] * n_cards
+    uniform_q = [1.0 / n_cards] * n_cards
+
+    game = ToyPokerCFR(uniform_p, uniform_q, pot_size=1.0, bet_size=1.0)
+    game.train(iterations=50_000)
+
+    print("Toy Poker CFR (Ganzfried & Chiswick)")
+    print("===================================")
+    print(f"Iterations: 50_000 across {n_cards * n_cards} card pairs per loop")
+    print(f"Range advantage (P1): {game.compute_range_advantage():.4f}")
+    print(f"ODF vs P1 bet:       {game.compute_odf_vs_p1_bet():.4f}")
+    print()
+    print("Sample average strategies:")
+
+    interesting_infosets = [
+        "P0|10|",
+        "P0|1|",
+        "P1|10|b",
+        "P1|1|b",
+        "P1|10|c",
+    ]
+
+    averages = game.get_average_strategies()
+    for key in interesting_infosets:
+        strat = averages.get(key)
+        if strat is None:
+            continue
+        print(f"  {key}: {strat}")
+
+
+if __name__ == "__main__":
+    _demo()
