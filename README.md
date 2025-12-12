@@ -18,6 +18,8 @@ A self-play algorithm that finds near-optimal strategies by repeatedly playing t
 * Strategy updates by choosing actions proportional to positive regret
 * Repeating this thousands/millions of times → converges to a Nash equilibrium
 
+The original CFR framework was introduced by Martin Zinkevich, Michael Johanson, Michael Bowling, and Carmelo Piccione. The CFR+ variant used throughout this project builds on the improvements proposed by Oskari Tammelin.
+
 **Monte Carlo CFR (MCCFR)**
 Samples only a few random trajectories each iteration, letting it scale to huge games like poker.
 
@@ -233,3 +235,5 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 * Chen, B., & Ankenman, J. (2006). _The Mathematics of Poker_. ConJelCo LLC.
 * Lee, H. R. (2020). [PokerHandEvaluator](https://github.com/HenryRLee/PokerHandEvaluator) – source of the precomputed lookup tables that power our Python hand-evaluation routines.
+* Zinkevich, M., Johanson, M., Bowling, M., & Piccione, C. (2007). Regret Minimization in Games with Incomplete Information. _Advances in Neural Information Processing Systems_.
+* Tammelin, O. (2014). Solving Large Imperfect Information Games Using CFR+. _AAAI Conference on Artificial Intelligence_.
