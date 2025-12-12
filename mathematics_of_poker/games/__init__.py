@@ -18,14 +18,16 @@ from .ch11 import (
     ZeroOneGame1,
     ZeroOneGame2,
     simulate_expected_value_game1,
-    simulate_expected_value_game2,
+    simulate_expected_value_game2 as _simulate_expected_value_zero_one_game2,
 )
 from .ch12 import (
     JamOrFoldGame1,
     JamOrFoldGame2,
     simulate_expected_value_jam_or_fold_game1,
-    simulate_expected_value_game2,
+    simulate_expected_value_game2 as simulate_expected_value_jam_or_fold_game2,
 )
+
+simulate_expected_value_game2 = _simulate_expected_value_zero_one_game2
 
 __all__ = [
     'OddsAndEvensGame',
@@ -42,5 +44,5 @@ __all__ = [
     'JamOrFoldGame1',
     'JamOrFoldGame2',
     'simulate_expected_value_jam_or_fold_game1',
-    'simulate_expected_value_game2',
+    'simulate_expected_value_jam_or_fold_game2',
 ]

@@ -1,10 +1,9 @@
 """
 Unit tests for the generic half-street zero-sum solver helpers.
 
-These tests mirror the Clairvoyance game expectations but call the
-protected `_solve_zero_sum_game` helper directly to ensure the linear
-programming formulation produces the same strategies as the analytic
-solution.
+These tests mirror the Clairvoyance game expectations and validate that
+the analytic Nash equilibrium matches the known closed-form solution
+across a range of pot and bet sizes.
 """
 
 import unittest
@@ -19,10 +18,10 @@ from mathematics_of_poker.games.ch11.clairvoyance import ClairvoyanceGame
 
 
 class TestHalfStreetZeroSumSolver(unittest.TestCase):
-    """Validate `_solve_zero_sum_game` against the analytic Clairvoyance solution."""
+    """Validate the closed-form Clairvoyance solution."""
 
     def test_solver_matches_clairvoyance_equilibrium(self):
-        """LP-based solver should reproduce the analytic Nash equilibrium."""
+        """Analytic solver should reproduce the known Nash equilibrium."""
         game = ClairvoyanceGame(pot_size=1.0, bet_size=1.0)
         payoff_x, _ = game.get_payoff_matrix()
 
@@ -40,7 +39,7 @@ class TestHalfStreetZeroSumSolver(unittest.TestCase):
         self.assertAlmostEqual(solution["game_value"], expected_value, places=9)
 
     def test_solver_handles_variable_bet_sizes(self):
-        """Solver should track the analytic solution across different bet sizes."""
+        """Analytic solver should match the solution across bet sizes."""
         pot_size = 1.0
         for bet_size in [0.25, 0.5, 1.0, 3.0, 10.0]:
             with self.subTest(bet_size=bet_size):
@@ -61,7 +60,7 @@ class TestHalfStreetZeroSumSolver(unittest.TestCase):
                 self.assertAlmostEqual(solution["game_value"], expected_value, places=9)
 
     def test_solver_handles_variable_pot_sizes(self):
-        """Solver should track the analytic solution across different pot sizes."""
+        """Analytic solver should match the solution across pot sizes."""
         bet_size = 1.0
         for pot_size in [0.5, 1.0, 2.5, 5.0, 20.0]:
             with self.subTest(pot_size=pot_size):

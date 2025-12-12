@@ -46,28 +46,10 @@ class HalfStreetGame(ABC):
         """
         pass
 
+    @abstractmethod
     def solve_nash_equilibrium(self) -> Dict:
-        """
-        Solve for the Nash equilibrium mixed strategies.
-
-        Returns:
-            Dictionary containing optimal strategies and game value
-        """
-        payoff_x, payoff_y = self.get_payoff_matrix()
-
-        # For zero-sum games, we can solve using linear programming
-        # Player Y maximizes their payoff, Player X minimizes Y's payoff
-        # Standard format: rows = strategies for row player (Y), cols = strategies for col player (X)
-        # Our matrix has rows = X strategies, cols = Y strategies, so we transpose
-        optimal_x, optimal_y, game_value = self._solve_zero_sum_game(payoff_y.T)
-
-        return {
-            "x_strategy": optimal_x,
-            "y_strategy": optimal_y,
-            "game_value": game_value,
-            "x_labels": self.get_strategy_labels()[0],
-            "y_labels": self.get_strategy_labels()[1],
-        }
+        """Return the analytic Nash equilibrium for the concrete game."""
+        raise NotImplementedError
 
     def solve_cfr_equilibrium(self, iterations: int = 10000, seed: Optional[int] = None) -> Dict:
         """Approximate the Nash equilibrium using regret-matching CFR.
@@ -92,125 +74,6 @@ class HalfStreetGame(ABC):
             "y_labels": self.get_strategy_labels()[1],
             "iterations": iterations,
         }
-
-    def _solve_zero_sum_game(self, payoff_matrix: np.ndarray) -> Tuple[np.ndarray, np.ndarray, float]:
-        """
-        Solve a zero-sum game using linear programming approach.
-
-        Args:
-            payoff_matrix: Payoff matrix for the row player (Y in our case)
-
-        Returns:
-            Tuple of (row_strategy, col_strategy, game_value)
-        """
-        try:
-            from scipy.optimize import linprog
-        except ImportError:
-            # Fallback to iterative method if scipy not available
-            return self._solve_iterative(payoff_matrix)
-
-        # Solve for column player (X) first - they want to minimize row player's payoff
-        m, n = payoff_matrix.shape
-
-        c = np.zeros(n + 1)
-        c[-1] = 1.0  # Minimise the maximal row payoff v
-
-        A_ub = np.zeros((m, n + 1))
-        A_ub[:, :n] = payoff_matrix
-        A_ub[:, -1] = -1.0
-        b_ub = np.zeros(m)
-
-        A_eq = np.zeros((1, n + 1))
-        A_eq[0, :n] = 1.0
-        b_eq = np.array([1.0])
-
-        bounds = [(0, None)] * n + [(None, None)]
-
-        result = linprog(
-            c,
-            A_ub=A_ub,
-            b_ub=b_ub,
-            A_eq=A_eq,
-            b_eq=b_eq,
-            bounds=bounds,
-            method="highs",
-        )
-
-        if not result.success:
-            return self._solve_iterative(payoff_matrix)
-
-        x_strategy = result.x[:n]
-        row_value = result.x[-1]
-
-        # Solve for row player (Y) using the dual formulation
-        c_y = np.zeros(m + 1)
-        c_y[-1] = -1.0  # Maximise row payoff -> minimise -w
-
-        A_ub_y = np.zeros((n, m + 1))
-        A_ub_y[:, :m] = -payoff_matrix.T
-        A_ub_y[:, -1] = 1.0
-        b_ub_y = np.zeros(n)
-
-        A_eq_y = np.zeros((1, m + 1))
-        A_eq_y[0, :m] = 1.0
-        b_eq_y = np.array([1.0])
-
-        bounds_y = [(0, None)] * m + [(None, None)]
-
-        result_y = linprog(
-            c_y,
-            A_ub=A_ub_y,
-            b_ub=b_ub_y,
-            A_eq=A_eq_y,
-            b_eq=b_eq_y,
-            bounds=bounds_y,
-            method="highs",
-        )
-
-        if not result_y.success:
-            y_strategy = np.ones(m) / m
-        else:
-            y_strategy = result_y.x[:m]
-
-        game_value = -row_value  # convert to column player's perspective
-
-        return self._normalise_strategy(x_strategy), self._normalise_strategy(y_strategy), game_value
-
-    def _solve_iterative(self, payoff_matrix: np.ndarray) -> Tuple[np.ndarray, np.ndarray, float]:
-        """
-        Fallback iterative method for solving zero-sum games.
-        Uses fictitious play approximation.
-        """
-        m, n = payoff_matrix.shape
-
-        # Initialize uniform strategies
-        x_strategy = np.ones(n) / n
-        y_strategy = np.ones(m) / m
-
-        # Fictitious play for approximation
-        iterations = 1000
-        x_cumulative = np.zeros(n)
-        y_cumulative = np.zeros(m)
-
-        for t in range(iterations):
-            # Y's best response to current X strategy
-            y_payoffs = payoff_matrix @ x_strategy
-            best_y = np.argmax(y_payoffs)
-            y_cumulative[best_y] += 1
-
-            # X's best response to current Y strategy
-            x_payoffs = y_strategy @ payoff_matrix
-            best_x = np.argmin(x_payoffs)  # X wants to minimize Y's payoff
-            x_cumulative[best_x] += 1
-
-            # Update mixed strategies
-            y_strategy = y_cumulative / (t + 1)
-            x_strategy = x_cumulative / (t + 1)
-
-        # Calculate game value
-        game_value = float(y_strategy @ payoff_matrix @ x_strategy)
-
-        return x_strategy, y_strategy, game_value
 
     def _solve_regret_matching(
         self,
