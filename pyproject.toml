@@ -44,7 +44,7 @@ Repository = "https://github.com/nheske/mathematics-of-poker"
 
 [tool.setuptools.packages.find]
 where = ["."]
-include = ["mathematics_of_poker*"]
+include = ["mathematics_of_poker*", "phevaluator*"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

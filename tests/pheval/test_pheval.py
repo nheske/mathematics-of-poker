@@ -1,4 +1,4 @@
-from mathematics_of_poker.phevaluator import evaluator
+from phevaluator import evaluator
 
 
 def test_royal_flush_beats_pair():
