@@ -25,6 +25,15 @@ from .ch12 import (
     JamOrFoldGame2,
     simulate_expected_value_jam_or_fold_game1,
     simulate_expected_value_game2 as simulate_expected_value_jam_or_fold_game2,
+    EquityEstimate,
+    estimate_preflop_equity,
+    deal_random_matchup,
+    random_hole_cards,
+    showdown_winner,
+    HoldemJamOrFoldResult,
+    simulate_holdem_jam_or_fold,
+    always_jam,
+    always_call,
 )
 
 simulate_expected_value_game2 = _simulate_expected_value_zero_one_game2
@@ -45,4 +54,13 @@ __all__ = [
     'JamOrFoldGame2',
     'simulate_expected_value_jam_or_fold_game1',
     'simulate_expected_value_jam_or_fold_game2',
+    'EquityEstimate',
+    'estimate_preflop_equity',
+    'deal_random_matchup',
+    'random_hole_cards',
+    'showdown_winner',
+    'HoldemJamOrFoldResult',
+    'simulate_holdem_jam_or_fold',
+    'always_jam',
+    'always_call',
 ]
